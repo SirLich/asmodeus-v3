@@ -1,8 +1,10 @@
 package main.me.sirlich.Prison;
 
 import main.me.sirlich.Prison.cancelers.QuestItemDropCanceler;
+import main.me.sirlich.Prison.cancelers.blockEditCanceler;
 import main.me.sirlich.Prison.civilians.Civilian;
 import main.me.sirlich.Prison.civilians.CivilianHandler;
+import main.me.sirlich.Prison.commands.ResetPlayerFile;
 import main.me.sirlich.Prison.handlers.GateHandler;
 import main.me.sirlich.Prison.cancelers.SilverfishBurrowCanceler;
 import main.me.sirlich.Prison.handlers.EntityDeathHandler;
@@ -12,6 +14,7 @@ import main.me.sirlich.Prison.mobs.EntityHandler;
 import main.me.sirlich.Prison.mobs.SpawnerHandler;
 import main.me.sirlich.Prison.utils.NMSUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -22,12 +25,16 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Prison extends JavaPlugin
 {
     private static Prison instance;
     private String world;
     private int GATE_TICKER_DELAY;
+    private Location WORLD_SPAWN;
 
     public static Prison getInstance()
     {
@@ -44,18 +51,27 @@ public class Prison extends JavaPlugin
         getServer().getPluginManager().registerEvents(new QuestItemDropCanceler(), this);
         getServer().getPluginManager().registerEvents(new EntityDeathHandler(), this);
         getServer().getPluginManager().registerEvents(new SilverfishBurrowCanceler(), this);
+        getServer().getPluginManager().registerEvents(new blockEditCanceler(),this);
     }
 
+    private void registerCommands(){
+        this.getCommand("cleardata").setExecutor(new ResetPlayerFile());
+    }
     private void registerCustomMobs(){
         NMSUtils.registerEntity("civilian",NMSUtils.Type.VILLAGER, Civilian.class,false);
     }
 
+    public Location getWorldSpawn(){
+        return WORLD_SPAWN;
+    }
     private void initDataFields(){
         try {
             BufferedReader br = new BufferedReader(new FileReader(Prison.getInstance().getDataFolder() + "/LichPrison"));
             this.world = br.readLine();
-            System.out.println(world);
             this.GATE_TICKER_DELAY = Integer.parseInt(br.readLine());
+            List<String> locs = Arrays.asList(br.readLine().split(","));
+            this.WORLD_SPAWN = new Location(Bukkit.getWorld(world), Double.parseDouble(locs.get(0)), Double.parseDouble(locs.get(1)), Double.parseDouble(locs.get(2)));
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -92,6 +108,7 @@ public class Prison extends JavaPlugin
         this.getServer().createWorld(new WorldCreator(world));
         startGateTicker();
         registerCustomMobs();
+        registerCommands();
         CivilianHandler.spawnCivilians();
         ItemHandler.initRpgItems();
         EntityHandler.initRpgEntities();

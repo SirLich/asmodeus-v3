@@ -36,6 +36,8 @@ public class PlayerJoinHandler implements Listener
                 e.printStackTrace();
             }
         } else {
+            player.teleport(Prison.getInstance().getWorldSpawn());
+            player.setFlying(false);
             System.out.println("Attempting to create player-file...");
             if(createPlayerYml(player, playerYml, true)) {
                 System.out.println("Created YML file for: " + player.getName());

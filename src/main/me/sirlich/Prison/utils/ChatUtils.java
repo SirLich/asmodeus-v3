@@ -3,6 +3,9 @@ package main.me.sirlich.Prison.utils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+import java.util.Random;
+
 public class ChatUtils
 {
     public static void chatInfo(Player p, String m)
@@ -20,9 +23,15 @@ public class ChatUtils
         p.sendMessage(ChatColor.RED + m);
     }
 
-    public static void civilianChat(Player p, String m)
+    public static void civilianChat(Player p, String nickname, List<String> list){
+        Random r = new Random();
+        String m = list.get(r.nextInt(list.size()));
+        civilianChat(p,nickname,m);
+    }
+
+    public static void civilianChat(Player p, String nickname, String m)
     {
-        p.sendMessage(ChatColor.AQUA + "<>" + ChatColor.WHITE + m);
+        p.sendMessage(ChatColor.GRAY + nickname + " " + ChatColor.WHITE + m);
     }
 
     public static void abilitiesChat(Player p, String m)

@@ -19,11 +19,12 @@ public class ItemHandler
     private static HashMap<RpgItemType, ItemStack> itemsMap = new HashMap<RpgItemType,ItemStack>();
 
     public static ItemStack getItem(RpgItemType key){
-        return itemsMap.get(key);
+        ItemStack itemStack = new ItemStack(itemsMap.get(key));
+        return itemStack;
     }
 
     public static ItemStack getItem(RpgItemType key, int num){
-        ItemStack itemStack = itemsMap.get(key);
+        ItemStack itemStack = new ItemStack(itemsMap.get(key));
         itemStack.setAmount(5);
         return itemStack;
     }
