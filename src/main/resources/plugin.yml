@@ -5,3 +5,6 @@ commands:
    cleardata:
       description: Screw off
       usage: playerdata clear
+   setstate:
+      description: Screw off
+      usage: Switch state

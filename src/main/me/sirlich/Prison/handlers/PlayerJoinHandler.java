@@ -1,6 +1,10 @@
 package main.me.sirlich.Prison.handlers;
 
 import main.me.sirlich.Prison.Prison;
+import main.me.sirlich.Prison.core.PlayerState;
+import main.me.sirlich.Prison.core.RpgPlayer;
+import main.me.sirlich.Prison.core.RpgPlayerList;
+import main.me.sirlich.Prison.gates.GateType;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -16,6 +20,12 @@ public class PlayerJoinHandler implements Listener
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+
+        //Make new RPGPlayer!
+        RpgPlayerList.addPlayer(player);
+        RpgPlayer rpgPlayer = RpgPlayerList.getRpgPlayer(player);
+        setDefaultRpgPlayerValues(rpgPlayer);
+
         String playerUuid = player.getUniqueId().toString();
         File playerYml = new File(Prison.getInstance().getDataFolder() + "/players/" + playerUuid + ".yml");
 
@@ -38,13 +48,17 @@ public class PlayerJoinHandler implements Listener
         } else {
             player.teleport(Prison.getInstance().getWorldSpawn());
             player.setFlying(false);
-            System.out.println("Attempting to create player-file...");
+            System.out.println("Attempting to create core-file...");
             if(createPlayerYml(player, playerYml, true)) {
                 System.out.println("Created YML file for: " + player.getName());
             } else {
                 System.out.println("Failed to create YML file for: " + player.getName());
             }
         }
+    }
+
+    private void setDefaultRpgPlayerValues(RpgPlayer rpgPlayer){
+        rpgPlayer.setPlayerState(PlayerState.BASIC);
     }
 
     public Boolean createPlayerYml(Player player, File playerYml, Boolean online) {
@@ -56,25 +70,9 @@ public class PlayerJoinHandler implements Listener
         FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerYml);
         playerConfig.set("basics.name", player.getName());
         playerConfig.set("basics.timesjoined", 0);
-        playerConfig.set("gates.0",false);
-        playerConfig.set("gates.1",false);
-        playerConfig.set("gates.2",false);
-        playerConfig.set("gates.3",false);
-        playerConfig.set("gates.4",false);
-        playerConfig.set("gates.5",false);
-        playerConfig.set("gates.6",false);
-        playerConfig.set("gates.7",false);
-        playerConfig.set("gates.8",false);
-        playerConfig.set("gates.9",false);
-        playerConfig.set("gates.11",false);
-        playerConfig.set("gates.12",false);
-        playerConfig.set("gates.13",false);
-        playerConfig.set("gates.14",false);
-        playerConfig.set("gates.15",false);
-        playerConfig.set("gates.16",false);
-        playerConfig.set("gates.17",false);
-        playerConfig.set("gates.18",false);
-
+        for(GateType gate : GateType.values()){
+            playerConfig.set("gates." + gate.toString(),false);
+        }
 
         try {
             playerConfig.save(playerYml);

@@ -403,7 +403,7 @@ public class NMSUtils {
          * <p>
          * Technically no mobs other than mooshrooms spawn naturally in this biome, including the usual night-time
          * hostile mobs. This also applies to caves, abandoned mine shafts, and other dark structures, meaning exploring
-         * underground is supposedly safe. However, mob spawners will still spawn mobs, and the player will also still
+         * underground is supposedly safe. However, mob spawners will still spawn mobs, and the core will also still
          * be able to breed animals and spawn mobs using eggs.
          */
         MUSHROOM_ISLAND(14),

@@ -17,6 +17,7 @@ public class ResetPlayerFile implements CommandExecutor
             Player player = (Player) sender;
             File file = new File(Prison.getInstance().getDataFolder() + "/players/" + player.getUniqueId() + ".yml");
             file.delete();
+            player.getInventory().clear();
             player.kickPlayer("Login again for a fresh start!");
         }
         return true;

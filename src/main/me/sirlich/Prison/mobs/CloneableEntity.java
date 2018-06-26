@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 
 
 public class CloneableEntity
@@ -26,8 +27,8 @@ public class CloneableEntity
 
         RpgEntity rpgEntity = new RpgEntity(dropTable,parent,entity);
         RpgEntityList.addEntity(entity.getUniqueId(),rpgEntity);
-
         entity.setCustomName(name);
+        ((LivingEntity) entity).setRemoveWhenFarAway(false);
     }
 
     public CloneableEntity(EntityType entityType, String name, DropTable dropTable){
