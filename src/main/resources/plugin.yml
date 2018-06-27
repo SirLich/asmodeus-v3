@@ -8,3 +8,6 @@ commands:
    setstate:
       description: Screw off
       usage: Switch state
+   zone:
+      description: Screw off
+      usage: ggg

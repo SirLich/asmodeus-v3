@@ -3,6 +3,7 @@ package main.me.sirlich.Prison.gates;
 import main.me.sirlich.Prison.Prison;
 import main.me.sirlich.Prison.items.ItemHandler;
 import main.me.sirlich.Prison.items.RpgItemType;
+import main.me.sirlich.Prison.utils.ChatUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -21,23 +22,27 @@ import java.io.IOException;
 
 public class GateHandler implements Listener
 {
-    /*
-     * I believe this stub of a method was created to open gates.
-     */
+
+
     @EventHandler
-    public void onItemClick(PlayerInteractEvent event){
-        Player player = event.getPlayer();
-
-        if(event.getAction() == Action.RIGHT_CLICK_AIR){
-            ItemStack itemStack = event.getItem();
-            RpgItemType rpgItemType = ItemHandler.getItemType(itemStack);
-            if(rpgItemType.equals(RpgItemType.RED_CRYSTAL_KEY)){
-
+    public void onPlayerInteract(PlayerInteractEvent event){
+        Player player = (Player) event.getPlayer();
+        if(event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
+            if(player.getItemInHand().getType().equals(Material.EYE_OF_ENDER)) {
+                event.setCancelled(true);
+                ItemStack itemStack = event.getItem().clone();
+                RpgItemType rpgItemType = ItemHandler.getItemType(itemStack);
+                String gate = rpgItemType.toString().replace("_KEY","");
+                giveGatePermision(player,gate);
+                ItemHandler.consumeItems(player,itemStack);
+                Sound sound = Sound.BLOCK_END_PORTAL_SPAWN;
+                player.playSound(player.getLocation(),sound,1,1);
+                ChatUtils.chatInfo(player,"Gate Unlocked!");
             }
         }
     }
 
-    public static void giveGatePermision(Player player, GateType gate){
+    public static void giveGatePermision(Player player, String gate){
         String playerUUID = player.getUniqueId().toString();
         File playerYml = new File(Prison.getInstance().getDataFolder() + "/players/" + playerUUID + ".yml");
 

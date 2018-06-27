@@ -1,5 +1,8 @@
 package main.me.sirlich.Prison.core;
 
+import org.bukkit.Location;
+
+
 public class RpgPlayer
 {
     public PlayerState getPlayerState()
@@ -11,6 +14,7 @@ public class RpgPlayer
     {
         this.playerState = playerState;
     }
+
 
     private PlayerState playerState;
 }

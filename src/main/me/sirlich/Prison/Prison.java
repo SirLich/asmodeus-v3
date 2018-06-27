@@ -7,6 +7,7 @@ import main.me.sirlich.Prison.civilians.CivilianHandler;
 import main.me.sirlich.Prison.civilians.CivilianUtils;
 import main.me.sirlich.Prison.commands.ResetPlayerFile;
 import main.me.sirlich.Prison.commands.SetPlayerState;
+import main.me.sirlich.Prison.zones.ZoneCreator;
 import main.me.sirlich.Prison.gates.GateHandler;
 import main.me.sirlich.Prison.cancelers.SilverfishBurrowCanceler;
 import main.me.sirlich.Prison.handlers.EntityDeathHandler;
@@ -55,11 +56,15 @@ public class Prison extends JavaPlugin
         getServer().getPluginManager().registerEvents(new EntityDeathHandler(), this);
         getServer().getPluginManager().registerEvents(new SilverfishBurrowCanceler(), this);
         getServer().getPluginManager().registerEvents(new BlockEditCanceler(),this);
+        getServer().getPluginManager().registerEvents(new GateHandler(),this);
+        getServer().getPluginManager().registerEvents(new ZoneCreator(),this);
+
     }
 
     private void registerCommands(){
         this.getCommand("cleardata").setExecutor(new ResetPlayerFile());
         this.getCommand("setstate").setExecutor(new SetPlayerState());
+        this.getCommand("zone").setExecutor(new ZoneCreator());
     }
     private void registerCustomMobs(){
         NMSUtils.registerEntity("civilian",NMSUtils.Type.VILLAGER, Civilian.class,false);

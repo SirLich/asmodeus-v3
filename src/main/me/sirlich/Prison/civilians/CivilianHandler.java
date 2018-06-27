@@ -21,59 +21,6 @@ import java.util.*;
 public class CivilianHandler implements Listener
 {
 
-
-
-    private static boolean hasItems(Player player, ItemStack costStack){
-        //make sure we have enough
-        int cost = costStack.getAmount();
-        System.out.println("Looking for " + cost);
-        boolean hasEnough=false;
-        for (ItemStack invStack : player.getInventory().getContents())
-        {
-            if(invStack == null)
-                continue;
-            if (invStack.getTypeId() == costStack.getTypeId()) {
-
-                int inv = invStack.getAmount();
-                if (cost - inv > 0) {
-                    cost = cost - inv;
-                    System.out.println("Currently.." + cost);
-                } else {
-                    hasEnough=true;
-                    break;
-                }
-            }
-        }
-        return hasEnough;
-    }
-    private static boolean consumeItems(Player player, ItemStack costStack) {
-        if (!hasItems(player,costStack)){
-            return false;
-        }
-        //Loop though each item and consume as needed. We should of already
-        //checked to make sure we had enough with CheckItems.
-        for (ItemStack invStack : player.getInventory().getContents())
-        {
-            if(invStack == null)
-                continue;
-
-            if (invStack.getTypeId() == costStack.getTypeId()) {
-                int inv = invStack.getAmount();
-                int cost = costStack.getAmount();
-                if (cost - inv >= 0) {
-                    costStack.setAmount(cost - inv);
-                    player.getInventory().remove(invStack);
-                } else {
-                    costStack.setAmount(0);
-                    invStack.setAmount(inv - cost);
-                    break;
-                }
-            }
-        }
-        return true;
-    }
-
-
     @EventHandler
     public void onPlayerClickNPC(PlayerInteractEntityEvent event)
     {
@@ -109,25 +56,6 @@ public class CivilianHandler implements Listener
             } else {
                 player.kickPlayer("Please contact the server developers. Your core file may be corrupt!");
             }
-        }
-    }
-
-    public static void giveGatePermision(Player player, int gateID){
-        String playerUuid = player.getUniqueId().toString();
-        File playerYml = new File(Prison.getInstance().getDataFolder() + "/players/" + playerUuid + ".yml");
-
-        if (playerYml.exists()) {
-            FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerYml);
-            playerConfig.set("gates." + gateID,true);
-            try {
-                playerConfig.save(playerYml);
-                //Prison.getInstance().saveResource(Prison.getInstance().getDataFolder() + "/players/" + playerUuid + ".yml",false);
-                System.out.println("SAVED!");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            player.kickPlayer("Please contact the server developers. Your core file may be corrupt!");
         }
     }
 
@@ -202,7 +130,7 @@ public class CivilianHandler implements Listener
         if(actionType.equals("TAKE")){
             int amount = (Integer) actionMap.get("item_amount");
             ItemStack itemStack = ItemHandler.getItem(RpgItemType.valueOf((String)actionMap.get("item_type")),amount);
-            consumeItems(player,itemStack);
+            ItemHandler.consumeItems(player,itemStack);
         }
 
         //SOUND
@@ -213,7 +141,7 @@ public class CivilianHandler implements Listener
 
         //GIVE_DOOR_PERMISSION
         if(actionType.equals("GIVE_DOOR_PERMISSION")){
-            giveGatePermision(player,(Integer)actionMap.get("door_number"));
+            //giveGatePermision(player,(Integer)actionMap.get("door_number"));
         }
     }
 
@@ -274,7 +202,7 @@ public class CivilianHandler implements Listener
                     int amount = config.getInt(base + ".item_amount");
                     ItemStack itemStack = ItemHandler.getItem(rpgItemType, amount);
                     String gotoStage = "";
-                    if(hasItems(player, itemStack)){
+                    if(ItemHandler.hasItems(player, itemStack)){
                         gotoStage = config.getString(base + ".true_goto");
                     } else {
                         gotoStage = config.getString(base + ".false_goto");
