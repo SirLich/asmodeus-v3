@@ -22,9 +22,8 @@ public class EntityHandler
     public static void initRpgEntities(){
 
         DropTable dropTable = new DropTable();
-        dropTable.addItem(RpgItemType.RAT_MEAT, 0.4);
-        dropTable.addItem(RpgItemType.RAT_BONE,0.5);
-        dropTable.addItem(RpgItemType.GOLD_RING,0.05);
+        dropTable.addItem("RAT_MEAT", 0.4);
+        dropTable.addItem("RAT_BONE",0.5);
         createEntity(RpgEntityType.SEWER_RAT, EntityType.SILVERFISH, "Sewer Rat",dropTable);
     }
 }

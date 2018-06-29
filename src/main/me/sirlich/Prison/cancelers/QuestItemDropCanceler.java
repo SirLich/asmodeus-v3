@@ -4,7 +4,7 @@ import main.me.sirlich.Prison.core.PlayerState;
 import main.me.sirlich.Prison.core.RpgPlayer;
 import main.me.sirlich.Prison.core.RpgPlayerList;
 import main.me.sirlich.Prison.items.ItemHandler;
-import main.me.sirlich.Prison.items.RpgItemCategory;
+import main.me.sirlich.Prison.items.RpgItemType;
 import main.me.sirlich.Prison.utils.ChatUtils;
 import main.me.sirlich.Prison.utils.PrisonUtils;
 import org.bukkit.entity.Player;
@@ -21,7 +21,7 @@ public class QuestItemDropCanceler implements Listener
         Player player = (Player) event.getPlayer();
         RpgPlayer rpgPlayer = RpgPlayerList.getRpgPlayer(player);
         if(rpgPlayer.getPlayerState() != PlayerState.GOD){
-            if(ItemHandler.getItemCategory(event.getItemDrop().getItemStack()).equals(RpgItemCategory.QUEST_ITEM)){
+            if(ItemHandler.getItemType(event.getItemDrop().getItemStack()).equals(RpgItemType.QUEST_ITEM)){
                 ChatUtils.chatWarning(event.getPlayer(),"Quest items cannot be dropped!");
                 event.setCancelled(true);
             }

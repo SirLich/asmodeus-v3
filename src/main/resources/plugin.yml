@@ -5,9 +5,12 @@ commands:
    cleardata:
       description: Screw off
       usage: playerdata clear
-   setstate:
+   set:
       description: Screw off
       usage: Switch state
    zone:
-      description: Screw off
-      usage: ggg
+      description: Zone handler
+      usage: zone <help, create, inside, delete, list>
+   it:
+      description: nothing
+      usage: what

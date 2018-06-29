@@ -15,13 +15,31 @@ public class SetPlayerState implements CommandExecutor
         if (sender instanceof Player) {
             Player player = (Player) sender;
             RpgPlayer rpgPlayer = RpgPlayerList.getRpgPlayer(player);
-            String state = args[0];
-            if(state.equalsIgnoreCase("god")){
-                rpgPlayer.setPlayerState(PlayerState.GOD);
-                ChatUtils.chatInfo(player,"Player state set to: god");
-            } else if(state.equalsIgnoreCase("basic")){
-                rpgPlayer.setPlayerState(PlayerState.BASIC);
-                ChatUtils.chatInfo(player,"Player state set to: basic");
+            if(args.length < 1){
+                ChatUtils.chatWarning(player,"Please include an argument: state");
+                return true;
+            }
+            if(args[0].equalsIgnoreCase("state")){
+                if(args.length < 2){
+                    ChatUtils.chatWarning(player,"Please include a state: basic, god, pvp");
+                    return true;
+                }
+                String state = args[1];
+                if(state.equalsIgnoreCase("god")){
+                    rpgPlayer.setPlayerState(PlayerState.GOD);
+                    ChatUtils.toolChat(player, "Player state set.");
+                } else if(state.equalsIgnoreCase("basic")){
+                    rpgPlayer.setPlayerState(PlayerState.BASIC);
+                    ChatUtils.toolChat(player, "Player state set.");
+                }
+                else if(state.equalsIgnoreCase("pvp")){
+                    rpgPlayer.setPlayerState(PlayerState.PVP);
+                    ChatUtils.toolChat(player, "Player state set.");
+                } else {
+                    ChatUtils.chatWarning(player,"Please include a state: basic, god, pvp");
+                }
+            } else {
+                ChatUtils.chatWarning(player,"Please include an argument: state");
             }
         }
         return true;

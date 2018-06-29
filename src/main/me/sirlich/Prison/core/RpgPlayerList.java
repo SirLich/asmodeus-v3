@@ -13,7 +13,7 @@ public class RpgPlayerList
 
     public static void addPlayer(Player player)
     {
-        RpgPlayer rpgPlayer = new RpgPlayer();
+        RpgPlayer rpgPlayer = new RpgPlayer(player);
         rpgPlayerHashMap.put(player, rpgPlayer);
         playerHashMap.put(rpgPlayer, player);
     }

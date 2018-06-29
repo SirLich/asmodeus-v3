@@ -1,7 +1,6 @@
 package main.me.sirlich.Prison.mobs;
 
 import main.me.sirlich.Prison.Prison;
-import main.me.sirlich.Prison.items.RpgItemType;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;

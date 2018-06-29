@@ -26,7 +26,6 @@ public class ZoneCreator implements CommandExecutor, Listener
 {
     private static Location zoneP1;
     private static Location zoneP2;
-    private static Location zoneP3;
     private static String zoneName;
     private static ArrayList<String> zoneTags = new ArrayList<String>(20);
     private static boolean zoneCreation;
@@ -41,17 +40,21 @@ public class ZoneCreator implements CommandExecutor, Listener
             if(rpgPlayer.getPlayerState() != PlayerState.GOD){
                 ChatUtils.chatError(player,"This command can only be run in GOD mode");
             } else {
+                if(args.length < 1 || args[0].equalsIgnoreCase("help")){
+                    return false;
+                }
                 String type = args[0];
                 if (type.equalsIgnoreCase("create")) {
                     zoneCreation = true;
                     zoneCreationStep = 1;
                     zoneCreator = player;
                     zoneName = args[1];
-                    ChatUtils.chatInfo(player,"Started creation of zone: " +  zoneName);
-                } else if(type.equalsIgnoreCase("t")){
+                    ChatUtils.toolChat(player,"Started creation of new zone");
+                    ChatUtils.basicChat(player,"Click to set location 1");
+                } else if(type.equalsIgnoreCase("tag")){
                     if(zoneCreation){
                         zoneTags.add(args[1]);
-                        ChatUtils.chatInfo(player,"Tag added to zone: " + zoneName);
+                        ChatUtils.toolChat(player,"Tag added to zone.");
                     } else {
                         ChatUtils.chatError(player,"That command can only be used during the creation of a zone!");
                     }
@@ -59,9 +62,10 @@ public class ZoneCreator implements CommandExecutor, Listener
                     File zoneYml = new File(Prison.getInstance().getDataFolder() + "/zones.yml");
                     FileConfiguration zoneConfig = YamlConfiguration.loadConfiguration(zoneYml);
                     Set<String> zones = zoneConfig.getKeys(false);
+                    ChatUtils.toolChat(player,"Zones:");
                     for(String zone : zones)
                     {
-                        player.sendMessage(zone);
+                        ChatUtils.basicChat(player,zone);
                     }
                 } else if(type.equalsIgnoreCase("delete")){
                     File zoneYml = new File(Prison.getInstance().getDataFolder() + "/zones.yml");
@@ -79,11 +83,11 @@ public class ZoneCreator implements CommandExecutor, Listener
                         ChatUtils.chatError(player,"That zone does not exist.");
                     }
                 } else if(type.equalsIgnoreCase("inside")){
-                    System.out.println("Zones!");
                     ArrayList<String> zones = ZoneHandler.getZones(player);
+                    ChatUtils.toolChat(player,"You are inside the following zones:");
                     for(String zone : zones)
                     {
-                        player.sendMessage(zone);
+                        ChatUtils.basicChat(player,zone);
                     }
                 }
             }
@@ -94,22 +98,24 @@ public class ZoneCreator implements CommandExecutor, Listener
 
     private void createZone(){
         File zoneYml = new File(Prison.getInstance().getDataFolder() + "/zones.yml");
+        FileConfiguration zoneConfig = YamlConfiguration.loadConfiguration(zoneYml);
 
         if (zoneYml.exists()) {
             int p1x = (int) zoneP1.getX();
+            int p1y = (int) zoneP1.getY();
             int p1z = (int) zoneP1.getZ();
 
             int p2x = (int) zoneP2.getX();
+            int p2y = (int) zoneP2.getY();
             int p2z = (int) zoneP2.getZ();
 
-            FileConfiguration zoneConfig = YamlConfiguration.loadConfiguration(zoneYml);
             zoneConfig.set(zoneName + ".location.p1.x",Math.min(p1x,p2x));
+            zoneConfig.set(zoneName + ".location.p1.y",Math.min(p1y,p2y));
             zoneConfig.set(zoneName + ".location.p1.z",Math.min(p1z,p2z));
             zoneConfig.set(zoneName + ".location.p2.x",Math.max(p1x,p2x));
+            zoneConfig.set(zoneName + ".location.p2.y",Math.max(p1y,p2y));
             zoneConfig.set(zoneName + ".location.p2.z",Math.max(p1z,p2z));
-            zoneConfig.set(zoneName + ".location.bonus.x",zoneP3.getBlockX());
-            zoneConfig.set(zoneName + ".location.bonus.y",zoneP3.getBlockY());
-            zoneConfig.set(zoneName + ".location.bonus.z",zoneP3.getBlockZ());
+
 
             zoneConfig.set(zoneName + ".name",zoneName);
             zoneConfig.set(zoneName + ".tags",zoneTags);
@@ -131,22 +137,17 @@ public class ZoneCreator implements CommandExecutor, Listener
                 event.setCancelled(true);
                 Location location = event.getBlock().getLocation();
                 if(zoneCreationStep == 1){
-                    ChatUtils.chatInfo(player,"Location 1 set");
-                    ChatUtils.chatInfo(player,"Click to set location 2");
+                    ChatUtils.toolChat(player,"Location 1 set");
+                    ChatUtils.basicChat(player,"Click to set location 2");
                     zoneP1 = location;
                     zoneCreationStep = 2;
                 } else if(zoneCreationStep == 2) {
-                    ChatUtils.chatInfo(player, "Location 2 set");
-                    ChatUtils.chatInfo(player, "Click to set the bonus location");
+                    ChatUtils.toolChat(player, "Location 2 set");
+                    ChatUtils.basicChat(player,"Click to finish creation.");
                     zoneP2 = location;
                     zoneCreationStep = 3;
                 } else if(zoneCreationStep == 3){
-                        ChatUtils.chatInfo(player,"Bonus location set");
-                        ChatUtils.chatInfo(player, "Click to finish");
-                        zoneP3 = location;
-                        zoneCreationStep = 4;
-                } else if(zoneCreationStep == 4){
-                    ChatUtils.chatInfo(player,"Zone has been created!");
+                    ChatUtils.toolChat(player,"Zone has been successfully created!");
                     createZone();
                     zoneCreation = false;
                     zoneTags.clear();

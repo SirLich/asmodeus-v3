@@ -1,8 +1,7 @@
 package main.me.sirlich.Prison.gates;
 
+import de.tr7zw.itemnbtapi.NBTItem;
 import main.me.sirlich.Prison.Prison;
-import main.me.sirlich.Prison.items.ItemHandler;
-import main.me.sirlich.Prison.items.RpgItemType;
 import main.me.sirlich.Prison.utils.ChatUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -23,21 +22,24 @@ import java.io.IOException;
 public class GateHandler implements Listener
 {
 
-
+    //Handles gate key clicks
     @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event){
+    public void onEnderEyeClick(PlayerInteractEvent event){
         Player player = (Player) event.getPlayer();
         if(event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
-            if(player.getItemInHand().getType().equals(Material.EYE_OF_ENDER)) {
-                event.setCancelled(true);
-                ItemStack itemStack = event.getItem().clone();
-                RpgItemType rpgItemType = ItemHandler.getItemType(itemStack);
-                String gate = rpgItemType.toString().replace("_KEY","");
-                giveGatePermision(player,gate);
-                ItemHandler.consumeItems(player,itemStack);
-                Sound sound = Sound.BLOCK_END_PORTAL_SPAWN;
-                player.playSound(player.getLocation(),sound,1,1);
-                ChatUtils.chatInfo(player,"Gate Unlocked!");
+            if(event.getItem() != null){
+                ItemStack itemStack = event.getItem();
+                NBTItem nbtItem = new NBTItem(itemStack);
+                if(nbtItem.hasKey("item_type") && nbtItem.getString("item_type").equals("GATE_KEY")) {
+                    String gate = nbtItem.getString("gate");
+                    giveGatePermision(player, gate);
+                    player.getInventory().setItemInMainHand(null);
+                    event.setCancelled(true);
+                    Sound sound = Sound.BLOCK_END_PORTAL_SPAWN;
+                    player.playSound(player.getLocation(), sound, 1, 1);
+                    ChatUtils.chatInfo(player, "Gate Unlocked!");
+
+                }
             }
         }
     }

@@ -122,15 +122,15 @@ public class CivilianHandler implements Listener
         //GIVE
         if(actionType.equals("GIVE")){
             int amount = (Integer) actionMap.get("item_amount");
-            ItemStack itemStack = ItemHandler.getItem(RpgItemType.valueOf((String)actionMap.get("item_type")),amount);
+            ItemStack itemStack = ItemHandler.getItem(actionMap.get("item_type").toString(),amount);
             player.getInventory().addItem(itemStack);
         }
 
         //TAKE
         if(actionType.equals("TAKE")){
             int amount = (Integer) actionMap.get("item_amount");
-            ItemStack itemStack = ItemHandler.getItem(RpgItemType.valueOf((String)actionMap.get("item_type")),amount);
-            ItemHandler.consumeItems(player,itemStack);
+            String itemStack = actionMap.get("item_type").toString();
+            ItemHandler.consumeItems(player,itemStack, amount);
         }
 
         //SOUND
@@ -198,11 +198,10 @@ public class CivilianHandler implements Listener
                 System.out.println("THIS IS: logic");
                 String logicType = config.getString(base + ".logic_type");
                 if(logicType.equals("HAS_ITEMS")){
-                    RpgItemType rpgItemType = RpgItemType.valueOf(config.getString(base + ".item_type"));
                     int amount = config.getInt(base + ".item_amount");
-                    ItemStack itemStack = ItemHandler.getItem(rpgItemType, amount);
+                    String itemStack = config.getString(base + ".item_type");
                     String gotoStage = "";
-                    if(ItemHandler.hasItems(player, itemStack)){
+                    if(ItemHandler.hasItems(player, itemStack, amount)){
                         gotoStage = config.getString(base + ".true_goto");
                     } else {
                         gotoStage = config.getString(base + ".false_goto");

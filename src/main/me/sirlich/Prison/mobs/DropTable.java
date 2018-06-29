@@ -20,8 +20,8 @@ public class DropTable
         droprates.add(droprate);
     }
 
-    public void addItem(RpgItemType rpgItemType, Double droprate){
-        items.add(ItemHandler.getItem(rpgItemType));
+    public void addItem(String item, Double droprate){
+        items.add(ItemHandler.getItem(item));
         droprates.add(droprate);
     }
 

@@ -1,5 +1,6 @@
 package main.me.sirlich.Prison;
 
+import main.me.sirlich.Prison.arenas.ArenaHandler;
 import main.me.sirlich.Prison.cancelers.QuestItemDropCanceler;
 import main.me.sirlich.Prison.cancelers.BlockEditCanceler;
 import main.me.sirlich.Prison.civilians.Civilian;
@@ -7,13 +8,14 @@ import main.me.sirlich.Prison.civilians.CivilianHandler;
 import main.me.sirlich.Prison.civilians.CivilianUtils;
 import main.me.sirlich.Prison.commands.ResetPlayerFile;
 import main.me.sirlich.Prison.commands.SetPlayerState;
+import main.me.sirlich.Prison.handlers.playerDamageHandler;
+import main.me.sirlich.Prison.items.ItemCommand;
 import main.me.sirlich.Prison.zones.ZoneCreator;
 import main.me.sirlich.Prison.gates.GateHandler;
 import main.me.sirlich.Prison.cancelers.SilverfishBurrowCanceler;
 import main.me.sirlich.Prison.handlers.EntityDeathHandler;
 import main.me.sirlich.Prison.handlers.PlayerJoinHandler;
 import main.me.sirlich.Prison.handlers.PlayerLeaveHandler;
-import main.me.sirlich.Prison.items.ItemHandler;
 import main.me.sirlich.Prison.mobs.EntityHandler;
 import main.me.sirlich.Prison.mobs.SpawnerHandler;
 import main.me.sirlich.Prison.utils.NMSUtils;
@@ -58,13 +60,16 @@ public class Prison extends JavaPlugin
         getServer().getPluginManager().registerEvents(new BlockEditCanceler(),this);
         getServer().getPluginManager().registerEvents(new GateHandler(),this);
         getServer().getPluginManager().registerEvents(new ZoneCreator(),this);
+        getServer().getPluginManager().registerEvents(new playerDamageHandler(), this);
 
     }
 
     private void registerCommands(){
         this.getCommand("cleardata").setExecutor(new ResetPlayerFile());
-        this.getCommand("setstate").setExecutor(new SetPlayerState());
+        this.getCommand("set").setExecutor(new SetPlayerState());
         this.getCommand("zone").setExecutor(new ZoneCreator());
+        this.getCommand("it").setExecutor(new ItemCommand());
+
     }
     private void registerCustomMobs(){
         NMSUtils.registerEntity("civilian",NMSUtils.Type.VILLAGER, Civilian.class,false);
@@ -109,6 +114,15 @@ public class Prison extends JavaPlugin
             }
         }, 0L, GATE_TICKER_DELAY);
     }
+
+    private void startArenaTicker(){
+        BukkitScheduler scheduler = getServer().getScheduler();
+        scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
+            public void run() {
+                ArenaHandler.runArenaTick();
+            }
+        }, 0L, GATE_TICKER_DELAY);
+    }
     @Override
     public void onEnable() {
         instance = this;
@@ -116,10 +130,10 @@ public class Prison extends JavaPlugin
         initDataFields();
         this.getServer().createWorld(new WorldCreator(world));
         startGateTicker();
+        startArenaTicker();
         registerCustomMobs();
         registerCommands();
         CivilianUtils.spawnCivilians();
-        ItemHandler.initRpgItems();
         EntityHandler.initRpgEntities();
         registerEvents();
         SpawnerHandler.initSpawners();
