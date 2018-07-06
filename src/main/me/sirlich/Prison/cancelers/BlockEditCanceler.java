@@ -12,6 +12,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
 
 public class BlockEditCanceler implements Listener
 {
@@ -37,6 +40,32 @@ public class BlockEditCanceler implements Listener
             if(rpgPlayer.getPlayerState() != PlayerState.GOD){
                 event.setCancelled(true);
                 ChatUtils.chatWarning(player,"You can't place that here!");
+            }
+        }
+    }
+
+    @EventHandler
+    public void placeWaterEvent(PlayerBucketEmptyEvent event){
+        if(!PrisonUtils.checkWorldValidity(event.getPlayer().getWorld())) return;
+        if(event.getPlayer() != null){
+            Player player = (Player) event.getPlayer();
+            RpgPlayer rpgPlayer = RpgPlayerList.getRpgPlayer(player);
+            if(rpgPlayer.getPlayerState() != PlayerState.GOD){
+                event.setCancelled(true);
+                ChatUtils.chatWarning(player,"You can't do that here!");
+            }
+        }
+    }
+
+    @EventHandler
+    public void takeWaterEvent(PlayerBucketFillEvent event){
+        if(!PrisonUtils.checkWorldValidity(event.getPlayer().getWorld())) return;
+        if(event.getPlayer() != null){
+            Player player = (Player) event.getPlayer();
+            RpgPlayer rpgPlayer = RpgPlayerList.getRpgPlayer(player);
+            if(rpgPlayer.getPlayerState() != PlayerState.GOD){
+                event.setCancelled(true);
+                ChatUtils.chatWarning(player,"You can't do that here!");
             }
         }
     }

@@ -5,7 +5,7 @@ commands:
    cleardata:
       description: Screw off
       usage: playerdata clear
-   set:
+   state:
       description: Screw off
       usage: Switch state
    zone:

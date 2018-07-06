@@ -9,9 +9,11 @@ import main.me.sirlich.Prison.zones.ZoneHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.io.File;
@@ -23,6 +25,41 @@ public class ArenaHandler
         File arenaYml = new File(Prison.getInstance().getDataFolder() + "/arenas.yml");
         FileConfiguration arenaConfig = YamlConfiguration.loadConfiguration(arenaYml);
         return ArenaType.valueOf(arenaConfig.getString(arena + ".type"));
+    }
+
+    public static void leaveArena(Player player){
+        RpgPlayer rpgPlayer = RpgPlayerList.getRpgPlayer(player);
+
+        rpgPlayer.clearAllEffect();
+        rpgPlayer.setPlayerState(PlayerState.BASIC);
+
+        String arena = ZoneHandler.getPvpZone(player);
+        ArenaType arenaType = ArenaHandler.getArenaType(arena);
+
+        if(arenaType.equals(ArenaType.KIT)){
+            rpgPlayer.safeClearInventory();
+            rpgPlayer.safeReturnInventory();
+        } else if(arenaType.equals(ArenaType.OP)){
+            rpgPlayer.safeDropInventory();
+            rpgPlayer.safeClearInventory();
+        }
+
+        File arenaYml = new File(Prison.getInstance().getDataFolder() + "/arenas.yml");
+        FileConfiguration arenaConfig = YamlConfiguration.loadConfiguration(arenaYml);
+
+
+        //Drop the pvp arenas "prize"
+        ItemStack itemStack = ItemHandler.getItem(arenaConfig.getString(arena + ".prize.item"), arenaConfig.getInt(arena + ".prize.amount"));
+        player.getWorld().dropItem(player.getLocation(),itemStack);
+
+        double x = arenaConfig.getDouble(arena + ".respawn_location.x");
+        double y = arenaConfig.getDouble(arena + ".respawn_location.y");
+        double z = arenaConfig.getDouble(arena + ".respawn_location.z");
+        float pitch = Float.parseFloat(arenaConfig.getString(arena + ".respawn_location.pitch"));
+        float yaw = Float.parseFloat(arenaConfig.getString(arena + ".respawn_location.yaw"));
+
+        Location respawnLocation = new Location(Bukkit.getWorld(Prison.getInstance().getWorld()), x,y,z,pitch,yaw);
+        player.teleport(respawnLocation);
     }
 
     public static void runArenaTick(){

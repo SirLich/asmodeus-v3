@@ -24,12 +24,12 @@ public class PlayerJoinHandler implements Listener
         //Make new RPGPlayer!
         RpgPlayerList.addPlayer(player);
         RpgPlayer rpgPlayer = RpgPlayerList.getRpgPlayer(player);
-        setDefaultRpgPlayerValues(rpgPlayer);
 
         String playerUuid = player.getUniqueId().toString();
         File playerYml = new File(Prison.getInstance().getDataFolder() + "/players/" + playerUuid + ".yml");
 
         if (playerYml.exists()) {
+            rpgPlayer.setPlayerState(PlayerState.BASIC);
             FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerYml);
             //Prison.getInstance().saveResource(Prison.getInstance().getDataFolder() + "/players/" + playerUuid + ".yml",false);
             String oldPlayerName = playerConfig.getString("basics.name");
@@ -46,6 +46,7 @@ public class PlayerJoinHandler implements Listener
                 e.printStackTrace();
             }
         } else {
+            rpgPlayer.setPlayerState(PlayerState.TUTORIAL);
             player.teleport(Prison.getInstance().getWorldSpawn());
             player.setFlying(false);
             System.out.println("Attempting to create core-file...");
@@ -55,10 +56,6 @@ public class PlayerJoinHandler implements Listener
                 System.out.println("Failed to create YML file for: " + player.getName());
             }
         }
-    }
-
-    private void setDefaultRpgPlayerValues(RpgPlayer rpgPlayer){
-        rpgPlayer.setPlayerState(PlayerState.BASIC);
     }
 
     public Boolean createPlayerYml(Player player, File playerYml, Boolean online) {

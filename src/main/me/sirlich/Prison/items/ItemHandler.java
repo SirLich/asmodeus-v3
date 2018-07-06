@@ -20,6 +20,10 @@ public class ItemHandler
         return itemConfig.getItemStack(key);
     }
 
+    public static boolean shouldBeDropped(ItemStack itemStack){
+        return (getItemType(itemStack) != RpgItemType.GATE_KEY && getItemType(itemStack) != RpgItemType.QUEST_ITEM);
+    }
+
     public static ItemStack getItem(String key, int num){
         System.out.println("Searching!");
         File file = new File(Prison.getInstance().getDataFolder() + "/items.yml");
@@ -30,12 +34,13 @@ public class ItemHandler
     }
 
     public static RpgItemType getItemType(ItemStack itemStack){
+        if(itemStack == null){
+            return RpgItemType.STANDARD_ITEM;
+        }
         NBTItem nbtItem = new NBTItem(itemStack);
         if(nbtItem.hasKey("item_type")){
-            System.out.println("Yay!");
             return RpgItemType.valueOf(nbtItem.getString("item_type"));
         } else {
-            System.out.println("Nay!");
             return RpgItemType.STANDARD_ITEM;
         }
     }

@@ -1,9 +1,12 @@
 package main.me.sirlich.Prison.civilians;
 
 import main.me.sirlich.Prison.Prison;
+import main.me.sirlich.Prison.core.RpgPlayer;
+import main.me.sirlich.Prison.gates.GateHandler;
 import main.me.sirlich.Prison.items.ItemHandler;
 import main.me.sirlich.Prison.items.RpgItemType;
 import main.me.sirlich.Prison.utils.ChatUtils;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -24,7 +27,6 @@ public class CivilianHandler implements Listener
     @EventHandler
     public void onPlayerClickNPC(PlayerInteractEntityEvent event)
     {
-
         /*
         This event catches the actual game click.
          */
@@ -39,20 +41,24 @@ public class CivilianHandler implements Listener
                 FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerYml);
 
                 //If core config does not contain the NPC, add some default setters
-                if(!playerConfig.contains("quests.civilians." + main.me.sirlich.Prison.civilians.CivilianUtils.getUniqueMobID(entity.getUniqueId()))){
-                    playerConfig.set("quests.civilians." + main.me.sirlich.Prison.civilians.CivilianUtils.getUniqueMobID(entity.getUniqueId())+".index",0);
-                    playerConfig.set("quests.civilians." + main.me.sirlich.Prison.civilians.CivilianUtils.getUniqueMobID(entity.getUniqueId())+".stage","start");
+                if(!playerConfig.contains("quests.civilians." +  CivilianUtils.getUniqueMobID(entity.getUniqueId()))){
+                    playerConfig.set("quests.civilians." +  CivilianUtils.getUniqueMobID(entity.getUniqueId())+".index",0);
+                    playerConfig.set("quests.civilians." +  CivilianUtils.getUniqueMobID(entity.getUniqueId())+".stage","start");
                     try {
                         playerConfig.save(playerYml);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
-                Integer index = playerConfig.getInt("quests.civilians." + main.me.sirlich.Prison.civilians.CivilianUtils.getUniqueMobID(entity.getUniqueId())+".index");
-                String stage = playerConfig.getString("quests.civilians." + main.me.sirlich.Prison.civilians.CivilianUtils.getUniqueMobID(entity.getUniqueId())+".stage");
-
-                //Where the magic happens!
-                handleInteraction(player,stage,index, main.me.sirlich.Prison.civilians.CivilianUtils.getUniqueMobID(entity.getUniqueId()));
+                Integer index = playerConfig.getInt("quests.civilians." + CivilianUtils.getUniqueMobID(entity.getUniqueId())+".index");
+                String stage = playerConfig.getString("quests.civilians." + CivilianUtils.getUniqueMobID(entity.getUniqueId())+".stage");
+                if(player.isSneaking()){
+                    File civilianYML = new File(Prison.getInstance().getDataFolder() + "/civilians/" + CivilianUtils.getUniqueMobID(entity.getUniqueId()) + ".yml");
+                    FileConfiguration config = YamlConfiguration.loadConfiguration(civilianYML);
+                    ChatUtils.shopChat(player,config.getString("information.sneak_statement"));
+                } else {
+                    handleInteraction(player,stage,index, CivilianUtils.getUniqueMobID(entity.getUniqueId()));
+                }
             } else {
                 player.kickPlayer("Please contact the server developers. Your core file may be corrupt!");
             }
@@ -119,6 +125,16 @@ public class CivilianHandler implements Listener
     private void handleAction(Player player, Map<?,?> actionMap, FileConfiguration config, String base){
         String actionType = (String) actionMap.get("action_type");
 
+        //TELEPORT
+        if(actionType.equals("TELEPORT")){
+            double x = Double.parseDouble(actionMap.get("x").toString());
+            double y = Double.parseDouble(actionMap.get("y").toString());
+            double z = Double.parseDouble(actionMap.get("z").toString());
+            float yaw = Float.parseFloat(actionMap.get("yaw").toString());
+            float pitch = Float.parseFloat(actionMap.get("pitch").toString());
+            Location location = new Location(player.getWorld(),x,y,z,yaw,pitch);
+            player.teleport(location);
+        }
         //GIVE
         if(actionType.equals("GIVE")){
             int amount = (Integer) actionMap.get("item_amount");
@@ -141,7 +157,7 @@ public class CivilianHandler implements Listener
 
         //GIVE_DOOR_PERMISSION
         if(actionType.equals("GIVE_DOOR_PERMISSION")){
-            //giveGatePermision(player,(Integer)actionMap.get("door_number"));
+            GateHandler.giveGatePermision(player,(String) actionMap.get("gate"));
         }
     }
 

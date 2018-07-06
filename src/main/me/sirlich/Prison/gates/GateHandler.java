@@ -2,6 +2,9 @@ package main.me.sirlich.Prison.gates;
 
 import de.tr7zw.itemnbtapi.NBTItem;
 import main.me.sirlich.Prison.Prison;
+import main.me.sirlich.Prison.core.PlayerState;
+import main.me.sirlich.Prison.core.RpgPlayer;
+import main.me.sirlich.Prison.core.RpgPlayerList;
 import main.me.sirlich.Prison.utils.ChatUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -33,7 +36,7 @@ public class GateHandler implements Listener
                 if(nbtItem.hasKey("item_type") && nbtItem.getString("item_type").equals("GATE_KEY")) {
                     String gate = nbtItem.getString("gate");
                     giveGatePermision(player, gate);
-                    player.getInventory().setItemInMainHand(null);
+                    event.getItem().setAmount(itemStack.getAmount() -1);
                     event.setCancelled(true);
                     Sound sound = Sound.BLOCK_END_PORTAL_SPAWN;
                     player.playSound(player.getLocation(), sound, 1, 1);
@@ -155,50 +158,65 @@ public class GateHandler implements Listener
 
     public static void runGateTick(){
         for(Player player : Bukkit.getServer().getOnlinePlayers()) {
-            Location east = new Location(player.getWorld(), 1,0,0);
+            Location east = new Location(player.getWorld(), 1,-1,0);
             Block east_block = player.getEyeLocation().add(east).getBlock();
 
-            Location west = new Location(player.getWorld(), -1,0,0);
+            Location west = new Location(player.getWorld(), -1,-1,0);
             Block west_block = player.getEyeLocation().add(west).getBlock();
 
-            Location north = new Location(player.getWorld(), 0,0,1);
+            Location north = new Location(player.getWorld(), 0,-1,1);
             Block north_block = player.getEyeLocation().add(north).getBlock();
 
-            Location south = new Location(player.getWorld(), 0,0,-1);
+            Location south = new Location(player.getWorld(), 0,-1,-1);
             Block south_block = player.getEyeLocation().add(south).getBlock();
 
             if(blockIsGate(east_block)){
                 east = east.multiply(3);
                 if(hasGatePermision(player, getGateType(east_block))){
                     playMedia(player);
+                    east.setY(0);
                     player.teleport(player.getLocation().add(east));
-
+                    removeTutorial(player,east_block);
                 }
             }
             if(blockIsGate(west_block)){
                 west = west.multiply(3);
                 if(hasGatePermision(player, getGateType(west_block))){
                     playMedia(player);
+                    west.setY(0);
                     player.teleport(player.getLocation().add(west));
+                    removeTutorial(player,west_block);
                 }
             }
             if(blockIsGate(north_block)){
                 north = north.multiply(3);
                 if(hasGatePermision(player, getGateType(north_block))){
                     playMedia(player);
+                    north.setY(0);
                     player.teleport(player.getLocation().add(north));
+                    removeTutorial(player,north_block);
                 }
             }
             if(blockIsGate(south_block)){
                 south = south.multiply(3);
                 if(hasGatePermision(player, getGateType(south_block))){
                     playMedia(player);
+                    south.setY(0);
                     player.teleport(player.getLocation().add(south));
+                    removeTutorial(player,south_block);
                 }
             }
         }
     }
 
+    private static void removeTutorial(Player player, Block block){
+        GateType gateType = getGateType(block);
+        RpgPlayer rpgPlayer = RpgPlayerList.getRpgPlayer(player);
+        if(gateType.equals(GateType.RED_GLASS) && rpgPlayer.getPlayerState().equals(PlayerState.TUTORIAL)){
+            ChatUtils.tutorialChat(player,"This concludes the tutorial. Welcome to The Dread Pits!");
+            rpgPlayer.setPlayerState(PlayerState.BASIC);
+        }
+    }
     private static void playMedia(Player player){
         player.playSound(player.getLocation(), Sound.ENTITY_FIREWORK_LAUNCH,1,1);
         player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION,3,1000));

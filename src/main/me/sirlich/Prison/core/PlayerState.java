@@ -2,5 +2,5 @@ package main.me.sirlich.Prison.core;
 
 public enum PlayerState
 {
-    GOD, BASIC, PVP
+    GOD, BASIC, PVP, PLOTS, TUTORIAL
 }

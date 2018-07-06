@@ -13,7 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerDropItemEvent;
 
 
-public class QuestItemDropCanceler implements Listener
+public class ItemDropCanceler implements Listener
 {
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event){
@@ -23,6 +23,9 @@ public class QuestItemDropCanceler implements Listener
         if(rpgPlayer.getPlayerState() != PlayerState.GOD){
             if(ItemHandler.getItemType(event.getItemDrop().getItemStack()).equals(RpgItemType.QUEST_ITEM)){
                 ChatUtils.chatWarning(event.getPlayer(),"Quest items cannot be dropped!");
+                event.setCancelled(true);
+            } else if(ItemHandler.getItemType(event.getItemDrop().getItemStack()).equals(RpgItemType.GATE_KEY)){
+                ChatUtils.chatWarning(event.getPlayer(),"Gate keys cannot be dropped!");
                 event.setCancelled(true);
             }
         }

@@ -49,6 +49,7 @@ public class CivilianUtils
     private static void civilianLoader(String s){
         World world = Bukkit.getWorld(Prison.getInstance().getWorld());
         File civilianYML = new File(Prison.getInstance().getDataFolder() + "/civilians/" + s + ".yml");
+        System.out.println("Trying to load: " + s);
         if (civilianYML.exists()){
             FileConfiguration config = YamlConfiguration.loadConfiguration(civilianYML);
             List<String> locs = Arrays.asList(config.getString("information.location").split(","));
@@ -61,6 +62,7 @@ public class CivilianUtils
             Civilian civilian = new Civilian(((CraftWorld) world).getHandle(), name, profession);
             civilian.setCustomName(ChatColor.DARK_GRAY + "~" + ChatColor.GRAY + name + ChatColor.DARK_GRAY + "~");
             civilian.setInvulnerable(true);
+            civilian.setProfession(profession);
             civilian.setCustomNameVisible(true);
 
             addCivilianToList(civilian.getBukkitEntity().getUniqueId(), uniqueMobID);

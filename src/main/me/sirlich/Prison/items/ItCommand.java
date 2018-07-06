@@ -18,11 +18,15 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.io.File;
 import java.io.IOException;
 
-public class ItemCommand implements CommandExecutor
+public class ItCommand implements CommandExecutor
 {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
+            if(args.length < 1){
+                ChatUtils.chatCommand(player,"list, give, save, delete, tag, tags, rtag");
+                return true;
+            }
             if(args[0].equalsIgnoreCase("save")){
                 File file = new File(Prison.getInstance().getDataFolder() + "/items.yml");
                 FileConfiguration itemConfig = YamlConfiguration.loadConfiguration(file);
@@ -51,12 +55,33 @@ public class ItemCommand implements CommandExecutor
             } else if(args[0].equalsIgnoreCase("give")){
                 File file = new File(Prison.getInstance().getDataFolder() + "/items.yml");
                 FileConfiguration itemConfig = YamlConfiguration.loadConfiguration(file);
+                if(args.length < 2){
+                    ChatUtils.chatError(player,"Please include an argument: /it give <item>");
+                    return true;
+                }
+                if(!itemConfig.isSet(args[1])){
+                    ChatUtils.chatError(player,"Please specify a real item. View with ./it list");
+                    return true;
+                }
                 ItemStack itemStack = itemConfig.getItemStack(args[1]);
+                if(args.length >= 3){
+                    int amount = Integer.parseInt(args[2]);
+                    if(amount >= 1 && amount <= 64){
+                        itemStack.setAmount(amount);
+                    } else {
+                        ChatUtils.chatError(player,"Please specify a number between 0-64");
+                        return true;
+                    }
+                }
                 player.getInventory().addItem(itemStack);
                 ChatUtils.toolChat(player,"Item received.");
             } else if(args[0].equalsIgnoreCase("delete")){
                 File file = new File(Prison.getInstance().getDataFolder() + "/items.yml");
                 FileConfiguration itemConfig = YamlConfiguration.loadConfiguration(file);
+                if(args.length < 2){
+                    ChatUtils.chatError(player,"Please include an argument: /it delete <item>");
+                    return true;
+                }
                 itemConfig.set(args[1],null);
                 ChatUtils.toolChat(player,"Item deleted.");
                 try {
@@ -67,14 +92,13 @@ public class ItemCommand implements CommandExecutor
             } else if(args[0].equalsIgnoreCase("tag")){
                 ItemStack itemStack = player.getInventory().getItemInMainHand();
                 NBTItem nbtItem = new NBTItem(itemStack);
-                nbtItem.setString(args[1],args[2]);
-                ChatUtils.toolChat(player,"Tag added to item.");
-                player.getInventory().setItemInMainHand(nbtItem.getItem());
-            } else if(args[0].equalsIgnoreCase("c")){
-                ItemStack itemStack = player.getInventory().getItemInMainHand();
-                NBTItem nbtItem = new NBTItem(itemStack);
-                nbtItem.addCompound(args[1]);
-                ChatUtils.toolChat(player,"Compound added to item.");
+                if(args.length <= 2){
+                    nbtItem.addCompound(args[1]);
+                    ChatUtils.toolChat(player,"Tag added to item.");
+                } else{
+                    nbtItem.setString(args[1],args[2]);
+                    ChatUtils.toolChat(player,"Compound added to item.");
+                }
                 player.getInventory().setItemInMainHand(nbtItem.getItem());
             } else if(args[0].equalsIgnoreCase("tags")){
                 ItemStack itemStack = player.getInventory().getItemInMainHand();
@@ -86,8 +110,13 @@ public class ItemCommand implements CommandExecutor
             } else if(args[0].equalsIgnoreCase("rtag")){
                 ItemStack itemStack = player.getInventory().getItemInMainHand();
                 NBTItem nbtItem = new NBTItem(itemStack);
+                if(args.length < 2){
+                    ChatUtils.chatError(player,"Please include an argument: /it rtag <tag>");
+                }
                 nbtItem.removeKey(args[1]);
-                ChatUtils.toolChat(player,"tag has been removed");
+                ChatUtils.toolChat(player,"Tag has been removed,");
+            } else {
+                ChatUtils.chatCommand(player,"list, give, save, delete, tag, tags, rtag");
             }
         }
         return true;
