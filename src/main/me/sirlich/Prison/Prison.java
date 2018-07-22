@@ -9,14 +9,10 @@ import main.me.sirlich.Prison.core.CleardataCommand;
 import main.me.sirlich.Prison.core.StateCommand;
 import main.me.sirlich.Prison.handlers.playerDamageHandler;
 import main.me.sirlich.Prison.items.ItCommand;
-import main.me.sirlich.Prison.resources.ResourceUtils;
 import main.me.sirlich.Prison.zones.ZoneCreator;
 import main.me.sirlich.Prison.gates.GateHandler;
-import main.me.sirlich.Prison.handlers.EntityDeathHandler;
 import main.me.sirlich.Prison.handlers.PlayerJoinHandler;
 import main.me.sirlich.Prison.handlers.PlayerLeaveHandler;
-import main.me.sirlich.Prison.mobs.EntityHandler;
-import main.me.sirlich.Prison.mobs.SpawnerHandler;
 import main.me.sirlich.Prison.utils.NMSUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -60,7 +56,6 @@ public class Prison extends JavaPlugin
         getServer().getPluginManager().registerEvents(new PlayerLeaveHandler(), this);
         getServer().getPluginManager().registerEvents(new CivilianHandler(), this);
         getServer().getPluginManager().registerEvents(new ItemDropCanceler(), this);
-        getServer().getPluginManager().registerEvents(new EntityDeathHandler(), this);
         getServer().getPluginManager().registerEvents(new SilverfishBurrowCanceler(), this);
         getServer().getPluginManager().registerEvents(new BlockEditCanceler(),this);
         getServer().getPluginManager().registerEvents(new GateHandler(),this);
@@ -144,11 +139,9 @@ public class Prison extends JavaPlugin
         registerCustomMobs();
         registerCommands();
         CivilianUtils.spawnCivilians();
-        EntityHandler.initRpgEntities();
         registerEvents();
-        SpawnerHandler.initSpawners();
-        SpawnerHandler.startSpawnersTicking();
     }
+
     @Override
     public void onDisable()
     {
