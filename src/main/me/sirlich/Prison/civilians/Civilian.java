@@ -18,6 +18,14 @@ public class Civilian extends EntityVillager
         this.addScoreboardTag("civilian");
     }
 
+    public Civilian(World world){
+        super(world);
+        this.name = "Example Mob";
+        this.profession = 1;
+        this.bukkitEntity = new CraftCustomVillager(this.world.getServer(), this);
+        this.addScoreboardTag("civilian");
+    }
+
     @Override
     protected void r()
     {

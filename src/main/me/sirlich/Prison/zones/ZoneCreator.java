@@ -37,61 +37,70 @@ public class ZoneCreator implements CommandExecutor, Listener
         if (sender instanceof Player) {
             Player player = (Player) sender;
             RpgPlayer rpgPlayer = RpgPlayerList.getRpgPlayer(player);
-            if(rpgPlayer.getPlayerState() != PlayerState.GOD){
-                ChatUtils.chatError(player,"This command can only be run in GOD mode");
-            } else {
-                if(args.length < 1 || args[0].equalsIgnoreCase("help")){
-                    return false;
+            if(args.length < 1 || args[0].equalsIgnoreCase("help")){
+                return false;
+            }
+            String type = args[0];
+            if (type.equalsIgnoreCase("create")) {
+                zoneCreation = true;
+                zoneCreationStep = 1;
+                zoneCreator = player;
+                zoneName = args[1];
+                ChatUtils.toolChat(player,"Started creation of new zone");
+                ChatUtils.basicChat(player,"Click to set location 1");
+            } else if(type.equalsIgnoreCase("tag")){
+                if(zoneCreation){
+                    zoneTags.add(args[1]);
+                    ChatUtils.toolChat(player,"Tag added to zone.");
+                } else {
+                    ChatUtils.chatError(player,"That command can only be used during the creation of a zone!");
                 }
-                String type = args[0];
-                if (type.equalsIgnoreCase("create")) {
-                    zoneCreation = true;
-                    zoneCreationStep = 1;
-                    zoneCreator = player;
-                    zoneName = args[1];
-                    ChatUtils.toolChat(player,"Started creation of new zone");
-                    ChatUtils.basicChat(player,"Click to set location 1");
-                } else if(type.equalsIgnoreCase("tag")){
-                    if(zoneCreation){
-                        zoneTags.add(args[1]);
-                        ChatUtils.toolChat(player,"Tag added to zone.");
-                    } else {
-                        ChatUtils.chatError(player,"That command can only be used during the creation of a zone!");
+            } else if(type.equalsIgnoreCase("list")){
+                File zoneYml = new File(Prison.getInstance().getDataFolder() + "/zones.yml");
+                FileConfiguration zoneConfig = YamlConfiguration.loadConfiguration(zoneYml);
+                Set<String> zones = zoneConfig.getKeys(false);
+                ChatUtils.toolChat(player,"Zones:");
+                for(String zone : zones)
+                {
+                    ChatUtils.basicChat(player,zone);
+                }
+            } else if(type.equalsIgnoreCase("delete")){
+                File zoneYml = new File(Prison.getInstance().getDataFolder() + "/zones.yml");
+                FileConfiguration zoneConfig = YamlConfiguration.loadConfiguration(zoneYml);
+                String delete = args[1];
+                if(zoneConfig.isSet(delete)){
+                    zoneConfig.set(delete,null);
+                    ChatUtils.chatWarning(player,"Zone deleted!");
+                    try {
+                        zoneConfig.save(zoneYml);
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                } else if(type.equalsIgnoreCase("list")){
-                    File zoneYml = new File(Prison.getInstance().getDataFolder() + "/zones.yml");
-                    FileConfiguration zoneConfig = YamlConfiguration.loadConfiguration(zoneYml);
-                    Set<String> zones = zoneConfig.getKeys(false);
-                    ChatUtils.toolChat(player,"Zones:");
-                    for(String zone : zones)
+                } else {
+                    ChatUtils.chatError(player,"That zone does not exist.");
+                }
+            } else if(type.equalsIgnoreCase("inside")){
+                ArrayList<String> zones = ZoneHandler.getZones(player);
+                ChatUtils.toolChat(player,"You are inside the following zones:");
+                for(String zone : zones)
+                {
+                    ChatUtils.basicChat(player,zone);
+                }
+            } else if(type.equalsIgnoreCase("view")){
+                File zoneYml = new File(Prison.getInstance().getDataFolder() + "/zones.yml");
+                FileConfiguration zoneConfig = YamlConfiguration.loadConfiguration(zoneYml);
+                String zone = args[1];
+                if(zoneConfig.isSet(zone)){
+                    ArrayList<String> tags = ZoneHandler.getZoneTags(zone);
+                    ChatUtils.toolChat(player,"This zone has the following tags:");
+                    for(String tag : tags)
                     {
-                        ChatUtils.basicChat(player,zone);
+                        ChatUtils.basicChat(player,tag);
                     }
-                } else if(type.equalsIgnoreCase("delete")){
-                    File zoneYml = new File(Prison.getInstance().getDataFolder() + "/zones.yml");
-                    FileConfiguration zoneConfig = YamlConfiguration.loadConfiguration(zoneYml);
-                    String delete = args[1];
-                    if(zoneConfig.isSet(delete)){
-                        zoneConfig.set(delete,null);
-                        ChatUtils.chatWarning(player,"Zone deleted!");
-                        try {
-                            zoneConfig.save(zoneYml);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        ChatUtils.chatError(player,"That zone does not exist.");
-                    }
-                } else if(type.equalsIgnoreCase("inside")){
-                    ArrayList<String> zones = ZoneHandler.getZones(player);
-                    ChatUtils.toolChat(player,"You are inside the following zones:");
-                    for(String zone : zones)
-                    {
-                        ChatUtils.basicChat(player,zone);
-                    }
+                } else {
+                    ChatUtils.chatError(player,"That zone does not exist.");
                 }
             }
-
         }
         return true;
     }

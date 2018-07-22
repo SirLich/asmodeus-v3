@@ -218,7 +218,7 @@ public class GateHandler implements Listener
         }
     }
     private static void playMedia(Player player){
-        player.playSound(player.getLocation(), Sound.ENTITY_FIREWORK_LAUNCH,1,1);
+        player.playSound(player.getLocation(), Prison.getInstance().getGateSound(),1,1);
         player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION,3,1000));
     }
 }

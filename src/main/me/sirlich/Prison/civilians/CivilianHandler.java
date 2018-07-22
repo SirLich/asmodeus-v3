@@ -122,6 +122,25 @@ public class CivilianHandler implements Listener
     }
 
 
+    private boolean handleLogic(Player player, Map<?,?> logicMap, FileConfiguration config, String base){
+        String logicType = (String) logicMap.get("logic_type");
+
+        //HAS ITEMS
+        if(logicType.equals("HAS_ITEMS")){
+            int amount = (Integer) logicMap.get("item_amount");
+            String itemStack = logicMap.get("item_type").toString();
+            return ItemHandler.hasItems(player,itemStack, amount);
+        }
+
+        //IS STAGE
+        if(logicType.equals("IS_STAGE")){
+            String npc = logicMap.get("npc").toString();
+            String stage = logicMap.get("stage").toString();
+            return true;
+        }
+
+        return true;
+    }
     private void handleAction(Player player, Map<?,?> actionMap, FileConfiguration config, String base){
         String actionType = (String) actionMap.get("action_type");
 
@@ -134,6 +153,14 @@ public class CivilianHandler implements Listener
             float pitch = Float.parseFloat(actionMap.get("pitch").toString());
             Location location = new Location(player.getWorld(),x,y,z,yaw,pitch);
             player.teleport(location);
+        }
+
+        //SET NPC STAGE
+
+        if(actionType.equals("SET_STAGE")){
+            String npc = actionMap.get("npc").toString();
+            String stage = actionMap.get("stage").toString();
+            setPlayerStage(player,npc,stage);
         }
         //GIVE
         if(actionType.equals("GIVE")){
@@ -211,22 +238,21 @@ public class CivilianHandler implements Listener
 
             //LOGIC
             if(stageType.equals("LOGIC")){
-                System.out.println("THIS IS: logic");
-                String logicType = config.getString(base + ".logic_type");
-                if(logicType.equals("HAS_ITEMS")){
-                    int amount = config.getInt(base + ".item_amount");
-                    String itemStack = config.getString(base + ".item_type");
-                    String gotoStage = "";
-                    if(ItemHandler.hasItems(player, itemStack, amount)){
-                        gotoStage = config.getString(base + ".true_goto");
-                    } else {
-                        gotoStage = config.getString(base + ".false_goto");
+                List<Map<?,?>> logics = config.getMapList(base + ".logic");
+                boolean isLogicRight = true;
+                String gotoStage = "";
+                for(Map<?,?> logic : logics){
+                    if(!handleLogic(player,logic,config,base)){
+                        isLogicRight = false;
                     }
-                    setPlayerStage(player,uniqueMobID,gotoStage);
-                    handleInteraction(player,gotoStage,0,uniqueMobID);
-                } else {
-                    System.out.println("MASSIVE ISSUE IN MOBS");
                 }
+                if(isLogicRight){
+                    gotoStage = config.getString(base + ".true_goto");
+                } else {
+                    gotoStage = config.getString(base + ".false_goto");
+                }
+                setPlayerStage(player,uniqueMobID,gotoStage);
+                handleInteraction(player,gotoStage,0,uniqueMobID);
             }
         } else {
             System.out.println("This entity is not registered!");

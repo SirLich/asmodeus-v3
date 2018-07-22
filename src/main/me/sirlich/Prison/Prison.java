@@ -1,9 +1,7 @@
 package main.me.sirlich.Prison;
 
 import main.me.sirlich.Prison.arenas.ArenaHandler;
-import main.me.sirlich.Prison.cancelers.tutorialHungerCanceler;
-import main.me.sirlich.Prison.cancelers.ItemDropCanceler;
-import main.me.sirlich.Prison.cancelers.BlockEditCanceler;
+import main.me.sirlich.Prison.cancelers.*;
 import main.me.sirlich.Prison.civilians.Civilian;
 import main.me.sirlich.Prison.civilians.CivilianHandler;
 import main.me.sirlich.Prison.civilians.CivilianUtils;
@@ -11,9 +9,9 @@ import main.me.sirlich.Prison.core.CleardataCommand;
 import main.me.sirlich.Prison.core.StateCommand;
 import main.me.sirlich.Prison.handlers.playerDamageHandler;
 import main.me.sirlich.Prison.items.ItCommand;
+import main.me.sirlich.Prison.resources.ResourceUtils;
 import main.me.sirlich.Prison.zones.ZoneCreator;
 import main.me.sirlich.Prison.gates.GateHandler;
-import main.me.sirlich.Prison.cancelers.SilverfishBurrowCanceler;
 import main.me.sirlich.Prison.handlers.EntityDeathHandler;
 import main.me.sirlich.Prison.handlers.PlayerJoinHandler;
 import main.me.sirlich.Prison.handlers.PlayerLeaveHandler;
@@ -22,6 +20,7 @@ import main.me.sirlich.Prison.mobs.SpawnerHandler;
 import main.me.sirlich.Prison.utils.NMSUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.WorldCreator;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -31,8 +30,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.List;
 
 public class Prison extends JavaPlugin
 {
@@ -41,6 +38,13 @@ public class Prison extends JavaPlugin
     private int GATE_TICKER_DELAY;
     private int ARENA_TICKER_DELAY;
     private Location WORLD_SPAWN;
+
+    public Sound getGateSound()
+    {
+        return GATE_SOUND;
+    }
+
+    private Sound GATE_SOUND;
 
     public static Prison getInstance()
     {
@@ -63,7 +67,7 @@ public class Prison extends JavaPlugin
         getServer().getPluginManager().registerEvents(new ZoneCreator(),this);
         getServer().getPluginManager().registerEvents(new playerDamageHandler(), this);
         getServer().getPluginManager().registerEvents(new tutorialHungerCanceler(),this);
-
+        getServer().getPluginManager().registerEvents(new FallDamageCanceler(),this);
     }
 
     private void registerCommands(){
@@ -80,13 +84,17 @@ public class Prison extends JavaPlugin
     public Location getWorldSpawn(){
         return WORLD_SPAWN;
     }
+
+
     private void initDataFields(){
 
         File arenaYml = new File(Prison.getInstance().getDataFolder() + "/prison.yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(arenaYml);
 
         this.world = config.getString("world");
-        this.GATE_TICKER_DELAY = config.getInt("gate_ticker_delay");
+        this.GATE_TICKER_DELAY = config.getInt("tickers.gate");
+        this.ARENA_TICKER_DELAY = config.getInt("tickers.arena");
+        this.GATE_SOUND = Sound.valueOf(config.getString("gate_sound"));
         this.WORLD_SPAWN = new Location(Bukkit.getWorld(world),config.getDouble("spawn_location.x"), config.getDouble("spawn_location.y"),config.getDouble("spawn_location.z"),Float.parseFloat(config.getString("spawn_location.pitch")),Float.parseFloat(config.getString("spawn_location.yaw")));
 
     }
@@ -96,6 +104,7 @@ public class Prison extends JavaPlugin
             if (!getDataFolder().exists()) {
                 System.out.println("Data folder not found... creating!");
                 getDataFolder().mkdirs();
+                System.out.println(getDataFolder());
             } else {
                 System.out.println("Data folder exists!");
             }
@@ -121,7 +130,7 @@ public class Prison extends JavaPlugin
             public void run() {
                 ArenaHandler.runArenaTick();
             }
-        }, 0L, GATE_TICKER_DELAY);
+        }, 0L, ARENA_TICKER_DELAY);
     }
     @Override
     public void onEnable() {

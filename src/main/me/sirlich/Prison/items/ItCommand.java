@@ -47,6 +47,7 @@ public class ItCommand implements CommandExecutor
                 }
             } else if(args[0].equalsIgnoreCase("list")){
                 File file = new File(Prison.getInstance().getDataFolder() + "/items.yml");
+                System.out.println("FILE: " + file.toString());
                 FileConfiguration itemConfig = YamlConfiguration.loadConfiguration(file);
                 ChatUtils.toolChat(player,"Server Items: ");
                 for(String item : itemConfig.getKeys(false)){

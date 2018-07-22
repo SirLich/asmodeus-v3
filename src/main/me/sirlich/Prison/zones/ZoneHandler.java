@@ -1,7 +1,9 @@
 package main.me.sirlich.Prison.zones;
 
 import main.me.sirlich.Prison.Prison;
+import main.me.sirlich.Prison.utils.ChatUtils;
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -9,6 +11,8 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public class ZoneHandler
 {
@@ -25,6 +29,17 @@ public class ZoneHandler
         }
 
         return zones;
+    }
+
+    public static ArrayList<String> getZoneTags(String zone){
+        File zoneYml = new File(Prison.getInstance().getDataFolder() + "/zones.yml");
+        FileConfiguration zoneConfig = YamlConfiguration.loadConfiguration(zoneYml);
+
+        List<String> tags = zoneConfig.getStringList(zone + ".tags");
+        ArrayList<String> tagsArrayList = new ArrayList<String>(tags.size());
+        tagsArrayList.addAll(tags);
+
+        return tagsArrayList;
     }
 
     public static String getPvpZone(Player player){

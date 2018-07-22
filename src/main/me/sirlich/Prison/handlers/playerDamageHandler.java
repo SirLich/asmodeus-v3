@@ -17,6 +17,9 @@ public class playerDamageHandler implements Listener
 {
     @EventHandler
     public void playerDamagedEvent(EntityDamageEvent event) {
+        if(event.isCancelled()){
+            return;
+        }
         //We only care about players!
         if(event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();

@@ -8,6 +8,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
 import java.io.*;
@@ -49,7 +50,15 @@ public class CivilianUtils
     private static void civilianLoader(String s){
         World world = Bukkit.getWorld(Prison.getInstance().getWorld());
         File civilianYML = new File(Prison.getInstance().getDataFolder() + "/civilians/" + s + ".yml");
-        System.out.println("Trying to load: " + s);
+        File data1 = new File(Prison.getInstance().getDataFolder().toString());
+        File data2 = new File(Prison.getInstance().getDataFolder().toString() + "/civilians");
+        File data3 = new File(Prison.getInstance().getDataFolder().toString() + "/civilians/bones.yml");
+
+        System.out.println("Does it exist1 " + data1.exists());
+        System.out.println("Does it exist2 " + data2.exists());
+        System.out.println("Does it exist3 " + data3.exists());
+
+        System.out.println(civilianYML.toString());
         if (civilianYML.exists()){
             FileConfiguration config = YamlConfiguration.loadConfiguration(civilianYML);
             List<String> locs = Arrays.asList(config.getString("information.location").split(","));
@@ -62,7 +71,6 @@ public class CivilianUtils
             Civilian civilian = new Civilian(((CraftWorld) world).getHandle(), name, profession);
             civilian.setCustomName(ChatColor.DARK_GRAY + "~" + ChatColor.GRAY + name + ChatColor.DARK_GRAY + "~");
             civilian.setInvulnerable(true);
-            civilian.setProfession(profession);
             civilian.setCustomNameVisible(true);
 
             addCivilianToList(civilian.getBukkitEntity().getUniqueId(), uniqueMobID);
@@ -70,12 +78,13 @@ public class CivilianUtils
 
             ((CraftWorld) world).addEntity(civilian, CreatureSpawnEvent.SpawnReason.CUSTOM);
             System.out.println("Civilian successfully added...");
-
+            /*
             try {
                 config.save(civilianYML);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            */
         } else {
             System.out.println("WARNING! SOMETHING IS TERRIBLE WRONG IN CIVILIAN LOADER");
         }
