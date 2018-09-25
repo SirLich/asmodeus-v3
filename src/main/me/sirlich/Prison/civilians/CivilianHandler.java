@@ -173,7 +173,11 @@ public class CivilianHandler implements Listener
         if(actionType.equals("TAKE")){
             int amount = (Integer) actionMap.get("item_amount");
             String itemStack = actionMap.get("item_type").toString();
-            ItemHandler.consumeItems(player,itemStack, amount);
+            String compareType = "ABSOLUTE";
+            if(actionMap.containsKey("compare_type")){
+                compareType = actionMap.get("compare_type").toString();
+            }
+            ItemHandler.consumeItems(player,itemStack, amount, compareType);
         }
 
         //SOUND

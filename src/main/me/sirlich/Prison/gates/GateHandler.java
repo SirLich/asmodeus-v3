@@ -41,7 +41,6 @@ public class GateHandler implements Listener
                     Sound sound = Sound.BLOCK_END_PORTAL_SPAWN;
                     player.playSound(player.getLocation(), sound, 1, 1);
                     ChatUtils.chatInfo(player, "Gate Unlocked!");
-
                 }
             }
         }

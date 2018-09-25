@@ -77,7 +77,7 @@ public class ItemHandler
         }
         return hasEnough;
     }
-    public static boolean consumeItems(Player player, String item, int cost) {
+    public static boolean consumeItems(Player player, String item, int cost, String compareType ) {
         if (!hasItems(player,item, cost)){
             return false;
         }

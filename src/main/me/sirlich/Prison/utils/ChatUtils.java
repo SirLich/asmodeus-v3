@@ -36,7 +36,7 @@ public class ChatUtils
     }
 
     public static void chatCommand(Player p, String m){
-        p.sendMessage(ChatColor.RED + "Missing or incorrect argument. Try: " + ChatColor.LIGHT_PURPLE + m);
+        p.sendMessage(ChatColor.RED + "Missing or incorrect argument. Try: " + m);
     }
     public static void chatError(Player p, String m)
     {

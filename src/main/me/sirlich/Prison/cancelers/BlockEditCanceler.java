@@ -8,6 +8,7 @@ import main.me.sirlich.Prison.core.RpgPlayerList;
 import main.me.sirlich.Prison.resources.ResourceUtils;
 import main.me.sirlich.Prison.utils.ChatUtils;
 import main.me.sirlich.Prison.utils.PrisonUtils;
+import net.minecraft.server.v1_12_R1.Vector3f;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -47,10 +48,12 @@ public class BlockEditCanceler implements Listener
                         block.equals(Material.LAPIS_ORE) ||
                         block.equals(Material.EMERALD_ORE)
                         ){
-                    System.out.println("1");
                     event.setCancelled(true);
+                    Location dropLoc = location.clone();
+                    dropLoc.setY(location.getY() + 1);
                     world.getBlockAt(location).setType(Material.STONE);
-                    ResourceUtils.handleDrop(world,location,block);
+
+                    ResourceUtils.handleDrop(world,dropLoc,block);
                     BukkitScheduler scheduler = Prison.getInstance().getServer().getScheduler();
                     scheduler.scheduleSyncDelayedTask(Prison.getInstance(), new Runnable() {
                         @Override

@@ -1,5 +1,6 @@
 package main.me.sirlich.Prison;
 
+import main.me.sirlich.Prison.handlers.AbilityHandler;
 import main.me.sirlich.Prison.arenas.ArenaHandler;
 import main.me.sirlich.Prison.cancelers.*;
 import main.me.sirlich.Prison.civilians.Civilian;
@@ -9,6 +10,7 @@ import main.me.sirlich.Prison.core.CleardataCommand;
 import main.me.sirlich.Prison.core.StateCommand;
 import main.me.sirlich.Prison.handlers.playerDamageHandler;
 import main.me.sirlich.Prison.items.ItCommand;
+import main.me.sirlich.Prison.mythic.OnMythicLoad;
 import main.me.sirlich.Prison.zones.ZoneCreator;
 import main.me.sirlich.Prison.gates.GateHandler;
 import main.me.sirlich.Prison.handlers.PlayerJoinHandler;
@@ -63,6 +65,8 @@ public class Prison extends JavaPlugin
         getServer().getPluginManager().registerEvents(new playerDamageHandler(), this);
         getServer().getPluginManager().registerEvents(new tutorialHungerCanceler(),this);
         getServer().getPluginManager().registerEvents(new FallDamageCanceler(),this);
+        getServer().getPluginManager().registerEvents(new OnMythicLoad(),this);
+        //getServer().getPluginManager().registerEvents(new AbilityHandler(),this);
     }
 
     private void registerCommands(){

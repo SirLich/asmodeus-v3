@@ -38,9 +38,11 @@ public class ZoneCreator implements CommandExecutor, Listener
             Player player = (Player) sender;
             RpgPlayer rpgPlayer = RpgPlayerList.getRpgPlayer(player);
             if(args.length < 1 || args[0].equalsIgnoreCase("help")){
-                return false;
+                ChatUtils.chatCommand(player,"create, tag, list, delete, inside, view");
             }
             String type = args[0];
+
+            //Create
             if (type.equalsIgnoreCase("create")) {
                 zoneCreation = true;
                 zoneCreationStep = 1;
@@ -48,14 +50,20 @@ public class ZoneCreator implements CommandExecutor, Listener
                 zoneName = args[1];
                 ChatUtils.toolChat(player,"Started creation of new zone");
                 ChatUtils.basicChat(player,"Click to set location 1");
-            } else if(type.equalsIgnoreCase("tag")){
+            }
+
+            //Tag
+            else if(type.equalsIgnoreCase("tag")){
                 if(zoneCreation){
                     zoneTags.add(args[1]);
                     ChatUtils.toolChat(player,"Tag added to zone.");
                 } else {
                     ChatUtils.chatError(player,"That command can only be used during the creation of a zone!");
                 }
-            } else if(type.equalsIgnoreCase("list")){
+            }
+
+            //List
+            else if(type.equalsIgnoreCase("list")){
                 File zoneYml = new File(Prison.getInstance().getDataFolder() + "/zones.yml");
                 FileConfiguration zoneConfig = YamlConfiguration.loadConfiguration(zoneYml);
                 Set<String> zones = zoneConfig.getKeys(false);
@@ -64,7 +72,10 @@ public class ZoneCreator implements CommandExecutor, Listener
                 {
                     ChatUtils.basicChat(player,zone);
                 }
-            } else if(type.equalsIgnoreCase("delete")){
+            }
+
+            //Delete
+            else if(type.equalsIgnoreCase("delete")){
                 File zoneYml = new File(Prison.getInstance().getDataFolder() + "/zones.yml");
                 FileConfiguration zoneConfig = YamlConfiguration.loadConfiguration(zoneYml);
                 String delete = args[1];
@@ -79,14 +90,20 @@ public class ZoneCreator implements CommandExecutor, Listener
                 } else {
                     ChatUtils.chatError(player,"That zone does not exist.");
                 }
-            } else if(type.equalsIgnoreCase("inside")){
+            }
+
+            //Inside
+            else if(type.equalsIgnoreCase("inside")){
                 ArrayList<String> zones = ZoneHandler.getZones(player);
                 ChatUtils.toolChat(player,"You are inside the following zones:");
                 for(String zone : zones)
                 {
                     ChatUtils.basicChat(player,zone);
                 }
-            } else if(type.equalsIgnoreCase("view")){
+            }
+
+            //View
+            else if(type.equalsIgnoreCase("view")){
                 File zoneYml = new File(Prison.getInstance().getDataFolder() + "/zones.yml");
                 FileConfiguration zoneConfig = YamlConfiguration.loadConfiguration(zoneYml);
                 String zone = args[1];
