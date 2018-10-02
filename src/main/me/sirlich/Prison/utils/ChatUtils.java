@@ -1,5 +1,6 @@
 package main.me.sirlich.Prison.utils;
 
+import main.me.sirlich.Prison.core.DebugHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -12,6 +13,13 @@ import java.util.Random;
 public class ChatUtils
 {
 
+    public static void debug(Player p, String m, int debugLevel){
+        if(DebugHandler.getDebugLevel() >= debugLevel){
+            p.sendMessage(ChatColor.DARK_GREEN + "[" + ChatColor.GREEN + "!" + ChatColor.DARK_GREEN + "] " + ChatColor.WHITE + m);
+            Sound sound = Sound.ENTITY_ARROW_HIT_PLAYER;
+            p.playSound(p.getLocation(),sound,1,1);
+        }
+    }
     public static void shopChat(Player p, String m){
         p.sendMessage(ChatColor.DARK_GREEN + "[" + ChatColor.GREEN + "!" + ChatColor.DARK_GREEN + "] " + ChatColor.WHITE + m);
     }
@@ -36,7 +44,7 @@ public class ChatUtils
     }
 
     public static void chatCommand(Player p, String m){
-        p.sendMessage(ChatColor.RED + "Missing or incorrect argument. Try: " + m);
+        p.sendMessage(ChatColor.RED + "Missing or incorrect argument. Try: " + ChatColor.AQUA + ChatColor.ITALIC + m);
     }
     public static void chatError(Player p, String m)
     {

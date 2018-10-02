@@ -6,6 +6,8 @@ import main.me.sirlich.Prison.core.PlayerState;
 import main.me.sirlich.Prison.core.RpgPlayer;
 import main.me.sirlich.Prison.core.RpgPlayerList;
 import main.me.sirlich.Prison.utils.ChatUtils;
+import main.me.sirlich.Prison.zones.ZoneHandler;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -55,9 +57,6 @@ public class playerDamageHandler implements Listener
         } else if(rpgPlayer.getPlayerState().equals(PlayerState.BASIC)){
             //Players in BASIC mode shoulden't be taking PVp Damage
             return true;
-        } else if(rpgPlayer.getPlayerState().equals(PlayerState.GOD)){
-            //Players in GOD mode shoulden't be taking PVp Damage
-            return true;
         } else if(rpgPlayer.getPlayerState().equals(PlayerState.TUTORIAL)){
             //Players in TUTORIAL mode shoulden't be taking PVp Damage
             return true;
@@ -76,15 +75,14 @@ public class playerDamageHandler implements Listener
             if(isDead){
                 rpgPlayer.safeDropInventory();
                 rpgPlayer.safeClearInventory();
-                player.teleport(Prison.getInstance().getWorldSpawn());
+                player.teleport(ZoneHandler.getRespawnLocation(player));
                 rpgPlayer.clearAllEffect();
                 return true;
             }
         } else if(rpgPlayer.getPlayerState().equals(PlayerState.TUTORIAL)){
             if(isDead){
-                ChatUtils.chatInfo(player,"Oh no! You died!");
-                ChatUtils.chatInfo(player,"Don't worry though -this is just the tutorial, we saved your items for you.");
-                player.teleport(Prison.getInstance().getWorldSpawn());
+                ChatUtils.chatInfo(player,"This is the tutorial. Your items were not dropped.");
+                player.teleport(ZoneHandler.getRespawnLocation(player));
                 rpgPlayer.clearAllEffect();
                 return true;
             }
@@ -103,15 +101,14 @@ public class playerDamageHandler implements Listener
             if(isDead){
                 rpgPlayer.safeDropInventory();
                 rpgPlayer.safeClearInventory();
-                player.teleport(Prison.getInstance().getWorldSpawn());
+                player.teleport(ZoneHandler.getRespawnLocation(player));
                 rpgPlayer.clearAllEffect();
                 return true;
             }
         } else if(rpgPlayer.getPlayerState().equals(PlayerState.TUTORIAL)){
             if(isDead){
-                ChatUtils.chatInfo(player,"Oh no! You died!");
-                ChatUtils.chatInfo(player,"Don't worry though -this is just the tutorial, we saved your items for you.");
-                player.teleport(Prison.getInstance().getWorldSpawn());
+                ChatUtils.chatInfo(player,"This is the tutorial. Your items were not dropped.");
+                player.teleport(ZoneHandler.getRespawnLocation(player));
                 rpgPlayer.clearAllEffect();
                 return true;
             }

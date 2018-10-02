@@ -1,6 +1,7 @@
 package main.me.sirlich.Prison;
 
-import main.me.sirlich.Prison.handlers.AbilityHandler;
+import main.me.sirlich.Prison.core.DebugHandler;
+import main.me.sirlich.Prison.handlers.*;
 import main.me.sirlich.Prison.arenas.ArenaHandler;
 import main.me.sirlich.Prison.cancelers.*;
 import main.me.sirlich.Prison.civilians.Civilian;
@@ -8,14 +9,12 @@ import main.me.sirlich.Prison.civilians.CivilianHandler;
 import main.me.sirlich.Prison.civilians.CivilianUtils;
 import main.me.sirlich.Prison.core.CleardataCommand;
 import main.me.sirlich.Prison.core.StateCommand;
-import main.me.sirlich.Prison.handlers.playerDamageHandler;
 import main.me.sirlich.Prison.items.ItCommand;
 import main.me.sirlich.Prison.mythic.OnMythicLoad;
 import main.me.sirlich.Prison.zones.ZoneCreator;
 import main.me.sirlich.Prison.gates.GateHandler;
-import main.me.sirlich.Prison.handlers.PlayerJoinHandler;
-import main.me.sirlich.Prison.handlers.PlayerLeaveHandler;
 import main.me.sirlich.Prison.utils.NMSUtils;
+import main.me.sirlich.Prison.zones.ZoneHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -35,6 +34,13 @@ public class Prison extends JavaPlugin
     private String world;
     private int GATE_TICKER_DELAY;
     private int ARENA_TICKER_DELAY;
+
+    public int getZONE_TICKER_DELAY()
+    {
+        return ZONE_TICKER_DELAY;
+    }
+
+    private int ZONE_TICKER_DELAY;
     private Location WORLD_SPAWN;
 
     public Sound getGateSound()
@@ -66,6 +72,7 @@ public class Prison extends JavaPlugin
         getServer().getPluginManager().registerEvents(new tutorialHungerCanceler(),this);
         getServer().getPluginManager().registerEvents(new FallDamageCanceler(),this);
         getServer().getPluginManager().registerEvents(new OnMythicLoad(),this);
+        //getServer().getPluginManager().registerEvents(new TreasureChestHandler(),this);
         //getServer().getPluginManager().registerEvents(new AbilityHandler(),this);
     }
 
@@ -74,6 +81,7 @@ public class Prison extends JavaPlugin
         this.getCommand("state").setExecutor(new StateCommand());
         this.getCommand("zone").setExecutor(new ZoneCreator());
         this.getCommand("it").setExecutor(new ItCommand());
+        this.getCommand("d").setExecutor(new DebugHandler());
 
     }
     private void registerCustomMobs(){
@@ -95,7 +103,7 @@ public class Prison extends JavaPlugin
         this.ARENA_TICKER_DELAY = config.getInt("tickers.arena");
         this.GATE_SOUND = Sound.valueOf(config.getString("gate_sound"));
         this.WORLD_SPAWN = new Location(Bukkit.getWorld(world),config.getDouble("spawn_location.x"), config.getDouble("spawn_location.y"),config.getDouble("spawn_location.z"),Float.parseFloat(config.getString("spawn_location.pitch")),Float.parseFloat(config.getString("spawn_location.yaw")));
-
+        this.ZONE_TICKER_DELAY = config.getInt("tickers.zone");
     }
 
     private void createDataFolder(){
@@ -123,7 +131,7 @@ public class Prison extends JavaPlugin
     }
 
     private void startArenaTicker(){
-        System.out.println("Start Ticker Started");
+        System.out.println("Arena Ticker Started");
         BukkitScheduler scheduler = getServer().getScheduler();
         scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
             public void run() {
@@ -131,6 +139,18 @@ public class Prison extends JavaPlugin
             }
         }, 0L, ARENA_TICKER_DELAY);
     }
+
+    private void startZoneTicker(){
+        System.out.println("Zone Ticker Started");
+        BukkitScheduler scheduler = getServer().getScheduler();
+        scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
+            public void run() {
+                ZoneHandler.runZoneTick();
+            }
+        }, 0L, ZONE_TICKER_DELAY);
+    }
+
+
     @Override
     public void onEnable() {
         System.out.println("=-=-=-=-=-=-=-=-= LichPrison =-=-=-=-=-=-= ");
@@ -140,6 +160,7 @@ public class Prison extends JavaPlugin
         this.getServer().createWorld(new WorldCreator(world));
         startGateTicker();
         startArenaTicker();
+        startZoneTicker();
         registerCustomMobs();
         registerCommands();
         CivilianUtils.spawnCivilians();

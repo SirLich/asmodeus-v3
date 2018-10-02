@@ -14,3 +14,6 @@ commands:
    it:
       description: nothing
       usage: what
+   d:
+      description: nothing
+      usage: tyest

@@ -52,14 +52,8 @@ public class ArenaHandler
         ItemStack itemStack = ItemHandler.getItem(arenaConfig.getString(arena + ".prize.item"), arenaConfig.getInt(arena + ".prize.amount"));
         player.getWorld().dropItem(player.getLocation(),itemStack);
 
-        double x = arenaConfig.getDouble(arena + ".respawn_location.x");
-        double y = arenaConfig.getDouble(arena + ".respawn_location.y");
-        double z = arenaConfig.getDouble(arena + ".respawn_location.z");
-        float pitch = Float.parseFloat(arenaConfig.getString(arena + ".respawn_location.pitch"));
-        float yaw = Float.parseFloat(arenaConfig.getString(arena + ".respawn_location.yaw"));
+        player.teleport(ZoneHandler.getRespawnLocation(player));
 
-        Location respawnLocation = new Location(Bukkit.getWorld(Prison.getInstance().getWorld()), x,y,z,pitch,yaw);
-        player.teleport(respawnLocation);
     }
 
     public static void runArenaTick(){

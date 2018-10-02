@@ -4,18 +4,44 @@ import main.me.sirlich.Prison.Prison;
 import main.me.sirlich.Prison.items.ItemHandler;
 import main.me.sirlich.Prison.items.RpgItemType;
 import main.me.sirlich.Prison.utils.ChatUtils;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class RpgPlayer
 {
+    public Set<String> getZoneTags()
+    {
+        return zoneTags;
+    }
+
+    public void addZoneTags(String zone){
+        zoneTags.add(zone);
+    }
+
+    public void addZoneTags(Set<String> zones){
+        Set<String> set = new HashSet<String>(zones);
+        zones.equals(set);
+    }
+    public void setZoneTags(Set<String> zoneTags)
+    {
+        this.zoneTags = zoneTags;
+    }
+
+    public void setZones(ArrayList<String> zones)
+    {
+        Set<String> set = new HashSet<String>(zones);
+        zoneTags = set;
+    }
+
+    private Set<String> zoneTags;
     public RpgPlayer(Player player){
         this.player = player;
     }
@@ -103,12 +129,22 @@ public class RpgPlayer
 
     }
 
-    public void clearAllEffect(){
+    public  void clearAllEffect(){
         final Player player = this.getPlayer();
-        player.setHealth(20);
-        player.setFoodLevel(20);
-        player.setFireTicks(0);
-        player.getActivePotionEffects().clear();
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                // What you want to schedule goes here
+                player.setHealth(20);
+                player.setFoodLevel(20);
+                player.setFireTicks(0);
+                player.getActivePotionEffects().clear();
+                player.setExp(0);
+            }
+
+        }.runTaskLater(Prison.getInstance(), 1);
+
     }
     public void savePlayerInventory()
     {

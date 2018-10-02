@@ -26,6 +26,7 @@ public class ZoneCreator implements CommandExecutor, Listener
 {
     private static Location zoneP1;
     private static Location zoneP2;
+    private static Location zoneP3;
     private static String zoneName;
     private static ArrayList<String> zoneTags = new ArrayList<String>(20);
     private static boolean zoneCreation;
@@ -102,6 +103,18 @@ public class ZoneCreator implements CommandExecutor, Listener
                 }
             }
 
+            //Teleport
+
+            else if(type.equalsIgnoreCase("visit")){
+                File zoneYml = new File(Prison.getInstance().getDataFolder() + "/zones.yml");
+                FileConfiguration zoneConfig = YamlConfiguration.loadConfiguration(zoneYml);
+                String zone = args[1];
+                if(zoneConfig.isSet(zone)){
+                    player.teleport(new Location(player.getWorld(),zoneConfig.getInt(zone + ".location.p3.x"), zoneConfig.getInt(zone + ".location.p3.y"), zoneConfig.getInt(zone + ".location.p3.z")));
+                } else {
+                    ChatUtils.chatError(player,"That zone does not exist.");
+                }
+            }
             //View
             else if(type.equalsIgnoreCase("view")){
                 File zoneYml = new File(Prison.getInstance().getDataFolder() + "/zones.yml");
@@ -109,7 +122,25 @@ public class ZoneCreator implements CommandExecutor, Listener
                 String zone = args[1];
                 if(zoneConfig.isSet(zone)){
                     ArrayList<String> tags = ZoneHandler.getZoneTags(zone);
-                    ChatUtils.toolChat(player,"This zone has the following tags:");
+                    ChatUtils.chatInfo(player,"Details of: " + zone);
+                    ChatUtils.toolChat(player,"Location:");
+                    ChatUtils.basicChat(player,"p1: " +
+                            zoneConfig.get(zone + ".location.p1.x").toString() + ", " +
+                            zoneConfig.get(zone + ".location.p1.y").toString() + ", " +
+                            zoneConfig.get(zone + ".location.p1.z").toString());
+
+                    ChatUtils.basicChat(player,"p2: " +
+                            zoneConfig.get(zone + ".location.p2.x").toString() + ", " +
+                            zoneConfig.get(zone + ".location.p2.y").toString() + ", " +
+                            zoneConfig.get(zone + ".location.p2.z").toString());
+
+                    ChatUtils.basicChat(player,"Extra location: " +
+                            zoneConfig.get(zone + ".location.p3.x").toString() + ", " +
+                            zoneConfig.get(zone + ".location.p3.y").toString() + ", " +
+                            zoneConfig.get(zone + ".location.p3.z").toString() + ", " +
+                            zoneConfig.get(zone + ".location.p3.yaw").toString());
+
+                    ChatUtils.toolChat(player,"Tags:");
                     for(String tag : tags)
                     {
                         ChatUtils.basicChat(player,tag);
@@ -127,13 +158,18 @@ public class ZoneCreator implements CommandExecutor, Listener
         FileConfiguration zoneConfig = YamlConfiguration.loadConfiguration(zoneYml);
 
         if (zoneYml.exists()) {
-            int p1x = (int) zoneP1.getX();
-            int p1y = (int) zoneP1.getY();
-            int p1z = (int) zoneP1.getZ();
+            double p1x = zoneP1.getX();
+            double p1y = zoneP1.getY();
+            double p1z = zoneP1.getZ();
 
-            int p2x = (int) zoneP2.getX();
-            int p2y = (int) zoneP2.getY();
-            int p2z = (int) zoneP2.getZ();
+            double p2x = zoneP2.getX();
+            double p2y = zoneP2.getY();
+            double p2z = zoneP2.getZ();
+
+            double p3x = zoneP3.getX();
+            double p3y = zoneP3.getY();
+            double p3z = zoneP3.getZ();
+            double p3yaw = zoneP3.getYaw();
 
             zoneConfig.set(zoneName + ".location.p1.x",Math.min(p1x,p2x));
             zoneConfig.set(zoneName + ".location.p1.y",Math.min(p1y,p2y));
@@ -141,10 +177,14 @@ public class ZoneCreator implements CommandExecutor, Listener
             zoneConfig.set(zoneName + ".location.p2.x",Math.max(p1x,p2x));
             zoneConfig.set(zoneName + ".location.p2.y",Math.max(p1y,p2y));
             zoneConfig.set(zoneName + ".location.p2.z",Math.max(p1z,p2z));
+            zoneConfig.set(zoneName + ".location.p3.x",p3x);
+            zoneConfig.set(zoneName + ".location.p3.y",p3y);
+            zoneConfig.set(zoneName + ".location.p3.z",p3z);
+            zoneConfig.set(zoneName + ".location.p3.yaw",p3yaw);
 
 
             zoneConfig.set(zoneName + ".name",zoneName);
-            zoneConfig.set(zoneName + ".tags",zoneTags);
+            zoneConfig.set(zoneName + ".tags", zoneTags);
 
             try {
                 zoneConfig.save(zoneYml);
@@ -169,10 +209,15 @@ public class ZoneCreator implements CommandExecutor, Listener
                     zoneCreationStep = 2;
                 } else if(zoneCreationStep == 2) {
                     ChatUtils.toolChat(player, "Location 2 set");
-                    ChatUtils.basicChat(player,"Click to finish creation.");
+                    ChatUtils.basicChat(player,"Click to set extra location.");
                     zoneP2 = location;
                     zoneCreationStep = 3;
-                } else if(zoneCreationStep == 3){
+                } else if(zoneCreationStep == 3) {
+                    ChatUtils.toolChat(player, "Extra 2 set");
+                    ChatUtils.basicChat(player,"Click to finish creation.");
+                    zoneP3 = player.getLocation();
+                    zoneCreationStep = 4;
+                }else if(zoneCreationStep == 4){
                     ChatUtils.toolChat(player,"Zone has been successfully created!");
                     createZone();
                     zoneCreation = false;
