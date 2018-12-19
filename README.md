@@ -4,13 +4,13 @@ version of [Minecraft](https://minecraft.net/en-us/). The plugin is primarily fo
 [The Dread Pits](https://discord.gg/XjV87YN), however branches of the repo are also being developed for 
 [AelusenMC](https://discord.gg/SkhZPQT), and for public use. 
 
-#Features:
+# Features:
 lichrpg is a feature-packed plugin with lots to offer. However, to keep the plugin from developing a case of bloat, 
 many per-server features (part of the original Dread Pits build) have been removed from the public release. 
 To make full use of the plugin, server owners are encouraged to make changes directly into the source code of the plugin, 
 and compile their own version. 
 
-###Basic feature list:
+### Basic feature list:
  
  - Zones: (a bit like worldguard)
     - Easily created, viewed, and edited from in-game
@@ -48,11 +48,11 @@ and compile their own version.
         - Has item
         - Has permission node
         
-#Documentation
+# Documentation
 Further documentation can be found in the *documentation* folder on the top level of the repo. The folder contains a slew 
 examples, as well as some specific documentation that does not really belong here. 
 
-###Permission Nodes:
+### Permission Nodes:
 
 Remember that you can use a .* to represent all permission nodes past a certain point. For example, lichrpg.* will give access 
 to all lichrpg permissions.  
@@ -75,7 +75,7 @@ to all lichrpg permissions.
     - lichrpg.zone.view
     - lichrpg.zone.inside
     
-###Zone tags:
+### Zone tags:
 - respawn_<_level_>: players who die in this zone will respawn at a specified location. The level specifies which zone "wins"
 in the case of over-laping zones.
 - <_potion name_>_<_level_>: applies potion effects to players in the zone 
